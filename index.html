@@ -589,8 +589,15 @@ window.addEventListener('load', () => {
 });
 
 function loadSavedData() {
-  // Simular carga de datos (en un entorno real usaría localStorage)
-  // Aquí los datos persisten solo durante la sesión
+  const savedUser = localStorage.getItem('userData');
+  const savedFriends = localStorage.getItem('friends');
+  const savedChats = localStorage.getItem('chats');
+
+  if (savedUser) userData = JSON.parse(savedUser);
+  if (savedFriends) friends = JSON.parse(savedFriends);
+  if (savedChats) chats = JSON.parse(savedChats);
+
+  // Si ya había sesión iniciada
   if (userData.loggedIn) {
     initPeer();
     showMainMenu();
@@ -598,11 +605,10 @@ function loadSavedData() {
 }
 
 function saveData() {
-  // En un entorno real, aquí se guardaría en localStorage:
-  // localStorage.setItem('userData', JSON.stringify(userData));
-  // localStorage.setItem('friends', JSON.stringify(friends));
-  // localStorage.setItem('chats', JSON.stringify(chats));
-  console.log('Datos guardados (en memoria)');
+  localStorage.setItem('userData', JSON.stringify(userData));
+  localStorage.setItem('friends', JSON.stringify(friends));
+  localStorage.setItem('chats', JSON.stringify(chats));
+  console.log("Datos guardados en localStorage");
 }
 
 // Inicialización
@@ -1247,6 +1253,11 @@ function createRemoteBullet(x, y, dir) {
   bullet.style.top = y + 'px';
   document.getElementById('gameScreen').appendChild(bullet);
   bullets.push({ element: bullet, x, y, vx: dir * 10, vy: 0 });
+}
+
+function logout() {
+  localStorage.clear();
+  location.reload();
 }
 </script>
 
