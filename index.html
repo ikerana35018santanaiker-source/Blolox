@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blolox</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .game-canvas { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      background: linear-gradient(180deg, #1e3a8a 0%, #1e293b 100%);
+    }
+    
+    .player { 
+      position: absolute; 
+      width: 40px; 
+      height: 60px; 
+      background: linear-gradient(145deg, #3b82f6, #2563eb);
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
+    }
+    
+    .player::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 8px;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(145deg, #60a5fa, #3b82f6);
+      border-radius: 50%;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .player-name { 
+      position: absolute; 
+      top: -30px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      white-space: nowrap; 
+      background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(30,30,30,0.9));
+      color: white; 
+      padding: 4px 12px; 
+      border-radius: 20px; 
+      font-size: 11px; 
+      font-weight: 600;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    .platform { 
+      position: absolute; 
+      background: linear-gradient(145deg, #10b981, #059669);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2);
+      border-radius: 8px;
+    }
+    
+    .bullet { 
+      position: absolute; 
+      width: 12px; 
+      height: 12px; 
+      background: radial-gradient(circle, #fbbf24, #f59e0b);
+      border-radius: 50%;
+      box-shadow: 0 0 20px #fbbf24, 0 0 40px #f59e0b;
+      animation: pulse 0.3s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .game-card {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .game-card:hover::before {
+      left: 100%;
+    }
+    
+    .game-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    
+    .friend-avatar {
+      position: relative;
+      transition: all 0.3s;
+    }
+    
+    .friend-avatar:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .friend-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 3px solid #1f2937;
+    }
+    
+    .friend-avatar.online::after {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse-green 2s infinite;
+    }
+    
+    .friend-avatar.offline::after {
+      background: #6b7280;
+    }
+    
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 10px #10b981; }
+      50% { box-shadow: 0 0 20px #10b981; }
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-primary:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
+    }
+    
+    .notification-enter {
+      animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-backdrop {
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    }
+    
+    .peer-id-box {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid #334155;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .peer-id-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+      animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+      to { left: 100%; }
+    }
+    
+    @keyframes blob {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, -50px) scale(1.1); }
+      50% { transform: translate(-20px, 20px) scale(0.9); }
+      75% { transform: translate(50px, 50px) scale(1.05); }
+    }
+    
+    .animate-blob {
+      animation: blob 7s infinite;
+    }
+    
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+    
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
+    
+    .logo-text {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+      animation: gradient-shift 3s ease infinite;
+      background-size: 200% 200%;
+    }
+    
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Pantalla de Registro -->
+<div id="registerScreen" class="flex items-center justify-center h-screen relative">
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" style="top: 0%; left: 0%;"></div>
+    <div class="absolute w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" style="top: 30%; right: 0%;"></div>
+    <div class="absolute w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" style="bottom: 0%; left: 30%;"></div>
+  </div>
+  
+  <div class="glass-effect p-10 rounded-3xl shadow-2xl w-[420px] relative z-10">
+    <div class="text-center mb-8">
+      <h1 class="text-6xl font-black mb-2 logo-text">Blolox</h1>
+      <p class="text-gray-300 text-sm">Multiplayer Gaming Platform</p>
+    </div>
+    <input id="usernameInput" type="text" placeholder="Nombre de usuario" 
+      class="w-full p-4 mb-6 bg-gray-800/50 rounded-xl border-2 border-gray-700 focus:border-blue-500 text-white placeholder-gray-400 transition-all">
+    <button onclick="register()" class="btn-primary w-full p-4 rounded-xl font-bold text-lg shadow-lg relative z-10">
+      Entrar al Juego
+    </button>
+  </div>
+</div>
+
+<!-- Menú Principal -->
+<div id="mainMenu" class="hidden h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+  <!-- Barra Superior de Amigos -->
+  <div class="glass-effect p-6 flex items-center justify-between border-b border-white/10">
+    <div class="flex items-center space-x-4 overflow-x-auto flex-1">
+      <button onclick="showAddFriend()" 
+        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 w-14 h-14 rounded-full text-3xl flex-shrink-0 shadow-lg hover:shadow-green-500/50 transition-all hover:scale-110 relative z-10">
+        +
+      </button>
+      <div id="friendsList" class="flex space-x-4"></div>
+    </div>
+    <div class="ml-6 peer-id-box px-5 py-3 rounded-xl relative overflow-hidden">
+      <div class="text-xs text-gray-400 mb-1">Tu ID</div>
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        <span id="myPeerId" class="text-blue-400 font-mono font-bold text-sm"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Juegos -->
+  <div class="flex-1 overflow-y-auto p-10">
+    <h2 class="text-4xl font-black mb-8 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Juegos Populares</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+      <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('obby')">
+        <div class="h-64 bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 flex items-center justify-center text-8xl relative">
+          🏃
+          <div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-2xl font-bold">Obby Extremo</h3>
+            <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-bold">NUEVO</span>
+          </div>
+          <p class="text-gray-400 text-sm mb-4">¡Salta y completa el recorrido de obstáculos!</p>
+          <div class="flex items-center space-x-4 text-sm text-gray-500">
+            <span>👥 0 jugando</span>
+            <span>⭐ 4.8</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('shooter')">
+        <div class="h-64 bg-gradient-to-br from-red-400 via-orange-500 to-yellow-600 flex items-center justify-center text-8xl relative">
+          🔫
+          <div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-2xl font-bold">Shooter Arena</h3>
+            <span class="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">POPULAR</span>
+          </div>
+          <p class="text-gray-400 text-sm mb-4">¡Dispara y sobrevive en la arena de batalla!</p>
+          <div class="flex items-center space-x-4 text-sm text-gray-500">
+            <span>👥 0 jugando</span>
+            <span>⭐ 4.9</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Añadir Amigo -->
+<div id="addFriendModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 modal-backdrop">
+  <div class="glass-effect p-8 rounded-3xl w-[450px] modal-content">
+    <h2 class="text-3xl font-black mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Añadir Amigo</h2>
+    <input id="friendPeerInput" type="text" placeholder="ID del peer" 
+      class="w-full p-4 mb-6 bg-gray-800/50 rounded-xl border-2 border-gray-700 focus:border-blue-500 text-white placeholder-gray-400 transition-all">
+    <div class="flex space-x-3">
+      <button onclick="addFriend()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 p-4 rounded-xl font-bold shadow-lg transition-all hover:scale-105 relative z-10">
+        Añadir
+      </button>
+      <button onclick="hideAddFriend()" class="flex-1 bg-gray-700 hover:bg-gray-600 p-4 rounded-xl font-bold transition-all hover:scale-105">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Lobby del Juego -->
+<div id="gameLobby" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-40 modal-backdrop">
+  <div class="glass-effect p-10 rounded-3xl w-2/3 max-w-4xl modal-content">
+    <h2 id="gameTitle" class="text-4xl font-black mb-8 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"></h2>
+    <div id="friendSelection" class="mb-8">
+      <h3 class="text-xl font-bold mb-4 text-gray-300">Selecciona amigos para invitar:</h3>
+      <div id="selectableFriends" class="space-y-3"></div>
+    </div>
+    <button onclick="startLobby()" class="btn-primary w-full p-5 rounded-xl font-bold text-xl shadow-lg mb-3 relative z-10">
+      🎮 Crear Sala
+    </button>
+    <button onclick="closeLobby()" class="w-full bg-gray-700 hover:bg-gray-600 p-4 rounded-xl font-bold transition-all">
+      Volver
+    </button>
+  </div>
+</div>
+
+<!-- Sala de Espera -->
+<div id="waitingRoom" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-40 modal-backdrop">
+  <div class="glass-effect p-10 rounded-3xl w-2/3 max-w-4xl modal-content">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-4xl font-black bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">Sala de Espera</h2>
+      <div class="flex items-center space-x-2 bg-green-500/20 px-4 py-2 rounded-full">
+        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+        <span class="text-green-400 font-bold">En espera</span>
+      </div>
+    </div>
+    <div id="playersList" class="mb-8 space-y-3"></div>
+    <button onclick="startGame()" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 p-5 rounded-xl font-bold text-xl shadow-lg transition-all hover:scale-105 mb-3 relative z-10">
+      🚀 ¡Empezar Juego!
+    </button>
+    <button onclick="cancelRoom()" class="w-full bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 p-4 rounded-xl font-bold transition-all">
+      Cancelar
+    </button>
+  </div>
+</div>
+
+<!-- Notificación de Invitación -->
+<div id="inviteNotification" class="hidden fixed top-6 right-6 glass-effect p-6 rounded-2xl shadow-2xl z-50 w-96 notification-enter border-2 border-blue-500/30">
+  <div class="flex items-center mb-3">
+    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-2xl mr-3">
+      🎮
+    </div>
+    <h3 class="font-bold text-lg">Invitación de Juego</h3>
+  </div>
+  <p id="inviteText" class="mb-4 text-sm text-gray-300"></p>
+  <div class="flex space-x-3">
+    <button onclick="acceptInvite()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 p-3 rounded-xl font-bold transition-all hover:scale-105 relative z-10">
+      ✓ Aceptar
+    </button>
+    <button onclick="declineInvite()" class="flex-1 bg-gray-700 hover:bg-gray-600 p-3 rounded-xl font-bold transition-all">
+      ✗ Rechazar
+    </button>
+  </div>
+</div>
+
+<!-- Canvas del Juego -->
+<div id="gameScreen" class="hidden game-canvas">
+  <!-- Controles Móviles -->
+  <div id="mobileControls" class="fixed bottom-8 left-0 right-0 flex justify-between px-8 z-50">
+    <!-- Joystick Izquierdo (Movimiento) -->
+    <div class="flex flex-col items-center space-y-3">
+      <button id="btnUp" class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-3xl font-bold shadow-xl border-2 border-white/30 active:bg-white/40 transition-all">
+        ▲
+      </button>
+      <div class="flex space-x-3">
+        <button id="btnLeft" class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-3xl font-bold shadow-xl border-2 border-white/30 active:bg-white/40 transition-all">
+          ◄
+        </button>
+        <button id="btnDown" class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-3xl font-bold shadow-xl border-2 border-white/30 active:bg-white/40 transition-all">
+          ▼
+        </button>
+        <button id="btnRight" class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-3xl font-bold shadow-xl border-2 border-white/30 active:bg-white/40 transition-all">
+          ►
+        </button>
+      </div>
+    </div>
+    
+    <!-- Botones Derecha (Acciones) -->
+    <div class="flex flex-col items-center space-y-3">
+      <button id="btnShoot" class="w-20 h-20 bg-red-500/80 backdrop-blur-md rounded-full flex items-center justify-center text-3xl font-bold shadow-xl border-2 border-red-300/30 active:bg-red-600 transition-all">
+        🔫
+      </button>
+      <button id="btnJump" class="w-16 h-16 bg-green-500/80 backdrop-blur-md rounded-full flex items-center justify-center text-2xl font-bold shadow-xl border-2 border-green-300/30 active:bg-green-600 transition-all">
+        ⬆
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Variables globales (en memoria, simula localStorage)
+let userData = { username: '', peerId: '' };
+let friends = []; // {peerId, username, online}
+let peer = null;
+let connections = {};
+let currentGame = null;
+let selectedFriends = [];
+let roomPlayers = [];
+let isHost = false;
+let currentInvite = null;
+
+// Inicialización
+function register() {
+  const username = document.getElementById('usernameInput').value.trim();
+  if (!username) return alert('Ingresa un nombre de usuario');
+  
+  userData.username = username;
+  initPeer();
+}
+
+function initPeer() {
+  // Generar peer ID único (en localStorage real sería persistente)
+  userData.peerId = 'user_' + Math.random().toString(36).substr(2, 9);
+  
+  peer = new Peer(userData.peerId);
+  
+  peer.on('open', (id) => {
+    console.log('Peer conectado:', id);
+    document.getElementById('myPeerId').textContent = id;
+    showMainMenu();
+  });
+  
+  peer.on('connection', (conn) => {
+    setupConnection(conn);
+  });
+  
+  peer.on('error', (err) => {
+    console.error('Error de peer:', err);
+    if (err.type === 'unavailable-id') {
+      userData.peerId = 'user_' + Math.random().toString(36).substr(2, 9);
+      peer = new Peer(userData.peerId);
+    }
+  });
+}
+
+function setupConnection(conn) {
+  connections[conn.peer] = conn;
+  
+  conn.on('open', () => {
+    conn.send({ type: 'handshake', username: userData.username, peerId: userData.peerId });
+  });
+  
+  conn.on('data', (data) => {
+    handleMessage(data, conn.peer);
+  });
+  
+  conn.on('close', () => {
+    updateFriendStatus(conn.peer, false);
+  });
+}
+
+function handleMessage(data, fromPeer) {
+  switch(data.type) {
+    case 'handshake':
+      const friend = friends.find(f => f.peerId === fromPeer);
+      if (friend) {
+        friend.username = data.username;
+        friend.online = true;
+        updateFriendsDisplay();
+      }
+      break;
+    case 'invite':
+      showInviteNotification(data);
+      break;
+    case 'accept':
+      addPlayerToRoom(data.username, fromPeer);
+      break;
+    case 'start':
+      joinGame(data.game);
+      break;
+    case 'playerMove':
+      updateRemotePlayer(fromPeer, data.x, data.y);
+      break;
+    case 'shoot':
+      createRemoteBullet(data.x, data.y, data.dir);
+      break;
+  }
+}
+
+function showMainMenu() {
+  document.getElementById('registerScreen').classList.add('hidden');
+  document.getElementById('mainMenu').classList.remove('hidden');
+  updateFriendsDisplay();
+}
+
+function showAddFriend() {
+  document.getElementById('addFriendModal').classList.remove('hidden');
+}
+
+function hideAddFriend() {
+  document.getElementById('addFriendModal').classList.add('hidden');
+  document.getElementById('friendPeerInput').value = '';
+}
+
+function addFriend() {
+  const peerId = document.getElementById('friendPeerInput').value.trim();
+  if (!peerId) return alert('Ingresa un ID de peer');
+  if (peerId === userData.peerId) return alert('No puedes añadirte a ti mismo');
+  if (friends.find(f => f.peerId === peerId)) return alert('Ya es tu amigo');
+  
+  friends.push({ peerId, username: peerId.split('_')[1], online: false });
+  connectToFriend(peerId);
+  updateFriendsDisplay();
+  hideAddFriend();
+}
+
+function connectToFriend(peerId) {
+  if (connections[peerId]) return;
+  const conn = peer.connect(peerId);
+  setupConnection(conn);
+}
+
+function updateFriendStatus(peerId, online) {
+  const friend = friends.find(f => f.peerId === peerId);
+  if (friend) {
+    friend.online = online;
+    updateFriendsDisplay();
+  }
+}
+
+function updateFriendsDisplay() {
+  const list = document.getElementById('friendsList');
+  list.innerHTML = friends.map(f => `
+    <div class="flex flex-col items-center">
+      <div class="friend-avatar ${f.online ? 'online' : 'offline'} w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold shadow-lg cursor-pointer">
+        ${f.username[0].toUpperCase()}
+      </div>
+      <div class="text-xs mt-2 font-semibold">${f.username}</div>
+    </div>
+  `).join('');
+}
+
+function selectGame(game) {
+  currentGame = game;
+  const titles = { obby: '🏃 Obby Extremo', shooter: '🔫 Shooter Arena' };
+  document.getElementById('gameTitle').textContent = titles[game];
+  
+  const selectable = document.getElementById('selectableFriends');
+  selectable.innerHTML = friends.filter(f => f.online).map(f => `
+    <label class="flex items-center space-x-3 cursor-pointer bg-gray-700/50 p-4 rounded-xl hover:bg-gray-700 transition-all">
+      <input type="checkbox" value="${f.peerId}" class="w-5 h-5 accent-blue-500">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold">
+        ${f.username[0].toUpperCase()}
+      </div>
+      <span class="font-semibold">${f.username}</span>
+    </label>
+  `).join('');
+  
+  document.getElementById('gameLobby').classList.remove('hidden');
+}
+
+function closeLobby() {
+  document.getElementById('gameLobby').classList.add('hidden');
+  currentGame = null;
+  selectedFriends = [];
+}
+
+function startLobby() {
+  const checks = document.querySelectorAll('#selectableFriends input:checked');
+  selectedFriends = Array.from(checks).map(c => c.value);
+  
+  isHost = true;
+  roomPlayers = [{ username: userData.username, peerId: userData.peerId }];
+  
+  // Enviar invitaciones
+  selectedFriends.forEach(peerId => {
+    if (connections[peerId]) {
+      connections[peerId].send({
+        type: 'invite',
+        game: currentGame,
+        host: userData.username
+      });
+    }
+  });
+  
+  document.getElementById('gameLobby').classList.add('hidden');
+  showWaitingRoom();
+}
+
+function showWaitingRoom() {
+  document.getElementById('waitingRoom').classList.remove('hidden');
+  updatePlayersList();
+}
+
+function updatePlayersList() {
+  const list = document.getElementById('playersList');
+  list.innerHTML = roomPlayers.map(p => `
+    <div class="glass-effect p-4 rounded-xl flex items-center hover:bg-white/5 transition-all">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mr-4 font-bold text-lg shadow-lg">
+        ${p.username[0].toUpperCase()}
+      </div>
+      <span class="font-semibold text-lg">${p.username}</span>
+      <div class="ml-auto flex items-center space-x-2 bg-green-500/20 px-3 py-1 rounded-full">
+        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        <span class="text-green-400 text-xs font-bold">Listo</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addPlayerToRoom(username, peerId) {
+  if (!roomPlayers.find(p => p.peerId === peerId)) {
+    roomPlayers.push({ username, peerId });
+    updatePlayersList();
+  }
+}
+
+function cancelRoom() {
+  document.getElementById('waitingRoom').classList.add('hidden');
+  roomPlayers = [];
+  isHost = false;
+}
+
+function showInviteNotification(data) {
+  currentInvite = data;
+  document.getElementById('inviteText').textContent = 
+    `${data.host} te invita a jugar ${data.game === 'obby' ? 'Obby Extremo' : 'Shooter Arena'}`;
+  document.getElementById('inviteNotification').classList.remove('hidden');
+}
+
+function acceptInvite() {
+  if (currentInvite && connections[Object.keys(connections)[0]]) {
+    Object.values(connections).forEach(conn => {
+      conn.send({ type: 'accept', username: userData.username });
+    });
+    currentGame = currentInvite.game;
+  }
+  document.getElementById('inviteNotification').classList.add('hidden');
+}
+
+function declineInvite() {
+  document.getElementById('inviteNotification').classList.add('hidden');
+  currentInvite = null;
+}
+
+function startGame() {
+  roomPlayers.forEach(p => {
+    if (connections[p.peerId]) {
+      connections[p.peerId].send({ type: 'start', game: currentGame });
+    }
+  });
+  joinGame(currentGame);
+}
+
+// Sistema de Juego
+let players = {};
+let myPlayer = null;
+let keys = {};
+let bullets = [];
+
+function joinGame(game) {
+  document.getElementById('mainMenu').classList.add('hidden');
+  document.getElementById('waitingRoom').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  
+  if (game === 'obby') {
+    initObby();
+  } else {
+    initShooter();
+  }
+}
+
+function initObby() {
+  const screen = document.getElementById('gameScreen');
+  screen.innerHTML = '';
+  
+  // Crear plataformas
+  const platforms = [
+    { x: 100, y: 500, w: 200, h: 20 },
+    { x: 400, y: 450, w: 150, h: 20 },
+    { x: 650, y: 400, w: 150, h: 20 },
+    { x: 900, y: 350, w: 200, h: 20 }
+  ];
+  
+  platforms.forEach(p => {
+    const plat = document.createElement('div');
+    plat.className = 'platform';
+    plat.style.left = p.x + 'px';
+    plat.style.top = p.y + 'px';
+    plat.style.width = p.w + 'px';
+    plat.style.height = p.h + 'px';
+    screen.appendChild(plat);
+  });
+  
+  createPlayer(userData.username, 150, 450, true);
+  startGameLoop();
+}
+
+function initShooter() {
+  const screen = document.getElementById('gameScreen');
+  screen.innerHTML = '';
+  
+  createPlayer(userData.username, 400, 300, true);
+  startGameLoop();
+}
+
+function createPlayer(name, x, y, isMe) {
+  const player = document.createElement('div');
+  player.className = 'player';
+  player.style.left = x + 'px';
+  player.style.top = y + 'px';
+  
+  const nameTag = document.createElement('div');
+  nameTag.className = 'player-name';
+  nameTag.textContent = name;
+  player.appendChild(nameTag);
+  
+  document.getElementById('gameScreen').appendChild(player);
+  
+  if (isMe) {
+    myPlayer = { element: player, x, y, vx: 0, vy: 0 };
+  } else {
+    players[name] = { element: player, x, y };
+  }
+}
+
+function updateRemotePlayer(peerId, x, y) {
+  const friend = friends.find(f => f.peerId === peerId);
+  if (friend && players[friend.username]) {
+    players[friend.username].x = x;
+    players[friend.username].y = y;
+    players[friend.username].element.style.left = x + 'px';
+    players[friend.username].element.style.top = y + 'px';
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  keys[e.key] = true;
+  if (e.key === ' ' && currentGame === 'shooter') {
+    shoot();
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  keys[e.key] = false;
+});
+
+function startGameLoop() {
+  setInterval(() => {
+    if (!myPlayer) return;
+    
+    // Movimiento
+    if (keys['ArrowLeft'] || keys['a']) myPlayer.vx = -5;
+    else if (keys['ArrowRight'] || keys['d']) myPlayer.vx = 5;
+    else myPlayer.vx = 0;
+    
+    if (keys['ArrowUp'] || keys['w']) myPlayer.vy = -5;
+    else if (keys['ArrowDown'] || keys['s']) myPlayer.vy = 5;
+    else myPlayer.vy = 0;
+    
+    myPlayer.x += myPlayer.vx;
+    myPlayer.y += myPlayer.vy;
+    
+    // Límites
+    myPlayer.x = Math.max(0, Math.min(window.innerWidth - 40, myPlayer.x));
+    myPlayer.y = Math.max(0, Math.min(window.innerHeight - 60, myPlayer.y));
+    
+    myPlayer.element.style.left = myPlayer.x + 'px';
+    myPlayer.element.style.top = myPlayer.y + 'px';
+    
+    // Enviar posición
+    Object.values(connections).forEach(conn => {
+      conn.send({ type: 'playerMove', x: myPlayer.x, y: myPlayer.y });
+    });
+    
+    // Actualizar balas
+    bullets.forEach((b, i) => {
+      b.x += b.vx;
+      b.y += b.vy;
+      b.element.style.left = b.x + 'px';
+      b.element.style.top = b.y + 'px';
+      
+      if (b.x < 0 || b.x > window.innerWidth || b.y < 0 || b.y > window.innerHeight) {
+        b.element.remove();
+        bullets.splice(i, 1);
+      }
+    });
+  }, 1000 / 60);
+}
+
+function shoot() {
+  const dir = keys['ArrowLeft'] || keys['a'] ? -1 : 1;
+  const bullet = document.createElement('div');
+  bullet.className = 'bullet';
+  bullet.style.left = (myPlayer.x + 20) + 'px';
+  bullet.style.top = (myPlayer.y + 25) + 'px';
+  document.getElementById('gameScreen').appendChild(bullet);
+  
+  bullets.push({ element: bullet, x: myPlayer.x + 20, y: myPlayer.y + 25, vx: dir * 10, vy: 0 });
+  
+  Object.values(connections).forEach(conn => {
+    conn.send({ type: 'shoot', x: myPlayer.x + 20, y: myPlayer.y + 25, dir });
+  });
+}
+
+function createRemoteBullet(x, y, dir) {
+  const bullet = document.createElement('div');
+  bullet.className = 'bullet';
+  bullet.style.left = x + 'px';
+  bullet.style.top = y + 'px';
+  document.getElementById('gameScreen').appendChild(bullet);
+  bullets.push({ element: bullet, x, y, vx: dir * 10, vy: 0 });
+}
+</script>
+
+</body>
+</html>
