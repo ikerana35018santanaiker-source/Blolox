@@ -50,14 +50,8 @@
       transition: left 0.5s;
     }
     
-    .game-card:hover::before {
-      left: 100%;
-    }
-    
-    .game-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
+    .game-card:hover::before { left: 100%; }
+    .game-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
     
     .friend-avatar {
       position: relative;
@@ -65,9 +59,7 @@
       cursor: pointer;
     }
     
-    .friend-avatar:hover {
-      transform: scale(1.1) rotate(5deg);
-    }
+    .friend-avatar:hover { transform: scale(1.1) rotate(5deg); }
     
     .friend-avatar::after {
       content: '';
@@ -86,9 +78,7 @@
       animation: pulse-green 2s infinite;
     }
     
-    .friend-avatar.offline::after {
-      background: #6b7280;
-    }
+    .friend-avatar.offline::after { background: #6b7280; }
     
     @keyframes pulse-green {
       0%, 100% { box-shadow: 0 0 10px #10b981; }
@@ -115,19 +105,10 @@
       transition: width 0.6s, height 0.6s;
     }
     
-    .btn-primary:hover::before {
-      width: 300px;
-      height: 300px;
-    }
+    .btn-primary:hover::before { width: 300px; height: 300px; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5); }
     
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
-    }
-    
-    .notification-enter {
-      animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .notification-enter { animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     
     @keyframes slideInRight {
       from { transform: translateX(400px); opacity: 0; }
@@ -135,14 +116,9 @@
     }
     
     .modal-backdrop { animation: fadeIn 0.3s; }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
     .modal-content { animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    
     @keyframes scaleIn {
       from { transform: scale(0.9); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
@@ -198,27 +174,10 @@
       50% { background-position: 100% 50%; }
     }
     
-    .chat-message {
-      max-width: 70%;
-      word-wrap: break-word;
-    }
-    
-    .chat-message.mine {
-      margin-left: auto;
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-    }
-    
-    .chat-message.theirs {
-      margin-right: auto;
-      background: rgba(255, 255, 255, 0.1);
-    }
-    
-    .chat-media {
-      max-width: 100%;
-      max-height: 200px;
-      border-radius: 8px;
-      margin-top: 8px;
-    }
+    .chat-message { max-width: 70%; word-wrap: break-word; }
+    .chat-message.mine { margin-left: auto; background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .chat-message.theirs { margin-right: auto; background: rgba(255, 255, 255, 0.1); }
+    .chat-media { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 8px; }
     
     .scrollbar-thin::-webkit-scrollbar { width: 8px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
@@ -236,6 +195,19 @@
       pointer-events: none;
       white-space: nowrap;
       border: 2px solid rgba(255,255,255,0.3);
+      z-index: 100;
+    }
+    
+    .game-ui {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      background: rgba(0,0,0,0.7);
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -286,32 +258,85 @@
 
   <div class="flex-1 overflow-y-auto p-10">
     <h2 class="text-4xl font-black mb-8 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Juegos Populares</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
       <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('obby')">
-        <div class="h-64 bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 flex items-center justify-center text-8xl relative">
+        <div class="h-48 bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 flex items-center justify-center text-6xl relative">
           🏃<div class="absolute inset-0 bg-black/20"></div>
         </div>
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-2xl font-bold">Obby Extremo</h3>
-            <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-bold">NUEVO</span>
-          </div>
-          <p class="text-gray-400 text-sm mb-4">¡Salta y completa el recorrido de obstáculos!</p>
+        <div class="p-4">
+          <h3 class="text-xl font-bold mb-1">Obby Extremo</h3>
+          <p class="text-gray-400 text-xs mb-2">¡Salta plataformas!</p>
+          <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">NUEVO</span>
         </div>
       </div>
       
       <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('shooter')">
-        <div class="h-64 bg-gradient-to-br from-red-400 via-orange-500 to-yellow-600 flex items-center justify-center text-8xl relative">
+        <div class="h-48 bg-gradient-to-br from-red-400 via-orange-500 to-yellow-600 flex items-center justify-center text-6xl relative">
           🔫<div class="absolute inset-0 bg-black/20"></div>
         </div>
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-2xl font-bold">Shooter Arena</h3>
-            <span class="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">POPULAR</span>
-          </div>
-          <p class="text-gray-400 text-sm mb-4">¡Dispara y sobrevive en la arena de batalla!</p>
+        <div class="p-4">
+          <h3 class="text-xl font-bold mb-1">Shooter Arena</h3>
+          <p class="text-gray-400 text-xs mb-2">¡Dispara y sobrevive!</p>
+          <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">POPULAR</span>
         </div>
       </div>
+      
+      <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('brainrot')">
+        <div class="h-48 bg-gradient-to-br from-purple-400 via-pink-500 to-red-600 flex items-center justify-center text-6xl relative">
+          🧠<div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-xl font-bold mb-1">Roba un Brainrot</h3>
+          <p class="text-gray-400 text-xs mb-2">¡Roba el brainrot!</p>
+          <span class="bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-bold">🔥 HOT</span>
+        </div>
+      </div>
+      
+      <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('garden')">
+        <div class="h-48 bg-gradient-to-br from-lime-400 via-green-500 to-emerald-600 flex items-center justify-center text-6xl relative">
+          🌱<div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-xl font-bold mb-1">Grow a Garden</h3>
+          <p class="text-gray-400 text-xs mb-2">¡Cultiva tu jardín!</p>
+          <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">RELAJANTE</span>
+        </div>
+      </div>
+      
+      <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('race')">
+        <div class="h-48 bg-gradient-to-br from-blue-400 via-cyan-500 to-teal-600 flex items-center justify-center text-6xl relative">
+          🏎️<div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-xl font-bold mb-1">Speed Race</h3>
+          <p class="text-gray-400 text-xs mb-2">¡Carrera extrema!</p>
+          <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold">RÁPIDO</span>
+        </div>
+      </div>
+      
+      <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('treasure')">
+        <div class="h-48 bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-600 flex items-center justify-center text-6xl relative">
+          💎<div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-xl font-bold mb-1">Treasure Hunt</h3>
+          <p class="text-gray-400 text-xs mb-2">¡Busca tesoros!</p>
+          <span class="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-bold">AVENTURA</span>
+        </div>
+      </div>
+      
+      <div class="game-card bg-gray-800 rounded-2xl overflow-hidden cursor-pointer shadow-xl" onclick="selectGame('build')">
+        <div class="h-48 bg-gradient-to-br from-slate-400 via-gray-500 to-zinc-600 flex items-center justify-center text-6xl relative">
+          🏗️<div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-xl font-bold mb-1">Build Battle</h3>
+          <p class="text-gray-400 text-xs mb-2">¡Construye!</p>
+          <span class="bg-gray-500 text-white text-xs px-2 py-1 rounded-full font-bold">CREATIVO</span>
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>
@@ -412,6 +437,7 @@
 
 <!-- Canvas del Juego -->
 <div id="gameScreen" class="hidden game-canvas">
+  <div id="gameUI" class="game-ui hidden"></div>
   <div id="mobileControls" class="fixed bottom-8 left-0 right-0 flex justify-between px-8 z-50">
     <div class="flex flex-col items-center space-y-3">
       <button id="btnUp" class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-3xl font-bold shadow-xl border-2 border-white/30 active:bg-white/40 transition-all">▲</button>
@@ -429,7 +455,7 @@
 </div>
 
 <script>
-let userData = { username: '', peerId: '', loggedIn: false };
+let userData = {username:'',peerId:'',loggedIn:false};
 let friends = [];
 let chats = {};
 let peer = null;
@@ -442,8 +468,11 @@ let currentInvite = null;
 let currentChatFriend = null;
 let pendingMedia = null;
 
-// Three.js variables
-let scene, camera, renderer, playerMesh, remotePlayers = {}, keys = {};
+// Three.js
+let scene,camera,renderer,playerMesh,remotePlayers={},keys={};
+let velocity = new THREE.Vector3();
+let onGround = false;
+let gameState = {};
 
 window.addEventListener('load', loadSavedData);
 
@@ -452,27 +481,24 @@ function loadSavedData() {
     const savedUser = localStorage.getItem('userData');
     const savedFriends = localStorage.getItem('friends');
     const savedChats = localStorage.getItem('chats');
-    if (savedUser) userData = JSON.parse(savedUser);
-    if (savedFriends) friends = JSON.parse(savedFriends);
-    if (savedChats) chats = JSON.parse(savedChats);
-    if (userData.loggedIn) {
-      initPeer();
-      showMainMenu();
-    }
-  } catch(e) { console.error('Error loading:', e); }
+    if(savedUser) userData = JSON.parse(savedUser);
+    if(savedFriends) friends = JSON.parse(savedFriends);
+    if(savedChats) chats = JSON.parse(savedChats);
+    if(userData.loggedIn) { initPeer(); showMainMenu(); }
+  } catch(e) { console.error('Load error:',e); }
 }
 
 function saveData() {
   try {
-    localStorage.setItem('userData', JSON.stringify(userData));
-    localStorage.setItem('friends', JSON.stringify(friends));
-    localStorage.setItem('chats', JSON.stringify(chats));
-  } catch(e) { console.error('Error saving:', e); }
+    localStorage.setItem('userData',JSON.stringify(userData));
+    localStorage.setItem('friends',JSON.stringify(friends));
+    localStorage.setItem('chats',JSON.stringify(chats));
+  } catch(e) { console.error('Save error:',e); }
 }
 
 function register() {
   const username = document.getElementById('usernameInput').value.trim();
-  if (!username) return alert('Ingresa un nombre de usuario');
+  if(!username) return alert('Ingresa un nombre de usuario');
   userData.username = username;
   userData.loggedIn = true;
   saveData();
@@ -480,48 +506,49 @@ function register() {
 }
 
 function initPeer() {
-  if (!userData.peerId) userData.peerId = 'user_' + Math.random().toString(36).substr(2, 9);
+  if(!userData.peerId) userData.peerId='user_'+Math.random().toString(36).substr(2,9);
   peer = new Peer(userData.peerId);
-  peer.on('open', (id) => {
-    userData.peerId = id;
-    document.getElementById('myPeerId').textContent = id;
+  peer.on('open',id=>{
+    userData.peerId=id;
+    document.getElementById('myPeerId').textContent=id;
     saveData();
     showMainMenu();
     reconnectToFriends();
   });
-  peer.on('connection', setupConnection);
-  peer.on('error', (err) => {
-    console.error('Peer error:', err);
-    if (err.type === 'unavailable-id') {
-      userData.peerId = 'user_' + Math.random().toString(36).substr(2, 9);
-      peer = new Peer(userData.peerId);
+  peer.on('connection',setupConnection);
+  peer.on('error',err=>{
+    console.error('Peer error:',err);
+    if(err.type==='unavailable-id'){
+      userData.peerId='user_'+Math.random().toString(36).substr(2,9);
+      peer=new Peer(userData.peerId);
     }
   });
 }
 
 function reconnectToFriends() {
-  friends.forEach(f => { if (!connections[f.peerId]) connectToFriend(f.peerId); });
+  friends.forEach(f=>{if(!connections[f.peerId])connectToFriend(f.peerId);});
 }
 
 function setupConnection(conn) {
-  connections[conn.peer] = conn;
-  conn.on('open', () => conn.send({ type: 'handshake', username: userData.username, peerId: userData.peerId }));
-  conn.on('data', (data) => handleMessage(data, conn.peer));
-  conn.on('close', () => updateFriendStatus(conn.peer, false));
+  connections[conn.peer]=conn;
+  conn.on('open',()=>conn.send({type:'handshake',username:userData.username,peerId:userData.peerId}));
+  conn.on('data',data=>handleMessage(data,conn.peer));
+  conn.on('close',()=>updateFriendStatus(conn.peer,false));
 }
 
-function handleMessage(data, fromPeer) {
+function handleMessage(data,fromPeer) {
   switch(data.type) {
     case 'handshake':
-      const friend = friends.find(f => f.peerId === fromPeer);
-      if (friend) { friend.username = data.username; friend.online = true; updateFriendsDisplay(); }
+      const friend=friends.find(f=>f.peerId===fromPeer);
+      if(friend){friend.username=data.username;friend.online=true;updateFriendsDisplay();}
       break;
-    case 'chatMessage': receiveChatMessage(fromPeer, data); break;
+    case 'chatMessage': receiveChatMessage(fromPeer,data); break;
     case 'invite': showInviteNotification(data); break;
-    case 'accept': addPlayerToRoom(data.username, fromPeer); break;
+    case 'accept': addPlayerToRoom(data.username,fromPeer); break;
     case 'start': joinGame(data.game); break;
-    case 'playerMove': updateRemotePlayer(fromPeer, data.position, data.rotation); break;
-    case 'shoot': createRemoteBullet(fromPeer, data.position, data.direction); break;
+    case 'playerMove': updateRemotePlayer(fromPeer,data.position,data.rotation); break;
+    case 'shoot': createRemoteBullet(fromPeer,data.position,data.direction); break;
+    case 'gameState': updateGameState(data.state); break;
   }
 }
 
@@ -531,16 +558,16 @@ function showMainMenu() {
   updateFriendsDisplay();
 }
 
-function showAddFriend() { document.getElementById('addFriendModal').classList.remove('hidden'); }
-function hideAddFriend() { document.getElementById('addFriendModal').classList.add('hidden'); document.getElementById('friendPeerInput').value = ''; }
+function showAddFriend(){document.getElementById('addFriendModal').classList.remove('hidden');}
+function hideAddFriend(){document.getElementById('addFriendModal').classList.add('hidden');document.getElementById('friendPeerInput').value='';}
 
 function addFriend() {
-  const peerId = document.getElementById('friendPeerInput').value.trim();
-  if (!peerId) return alert('Ingresa un ID de peer');
-  if (peerId === userData.peerId) return alert('No puedes añadirte a ti mismo');
-  if (friends.find(f => f.peerId === peerId)) return alert('Ya es tu amigo');
-  friends.push({ peerId, username: peerId.split('_')[1], online: false });
-  chats[peerId] = [];
+  const peerId=document.getElementById('friendPeerInput').value.trim();
+  if(!peerId) return alert('Ingresa un ID de peer');
+  if(peerId===userData.peerId) return alert('No puedes añadirte a ti mismo');
+  if(friends.find(f=>f.peerId===peerId)) return alert('Ya es tu amigo');
+  friends.push({peerId,username:peerId.split('_')[1],online:false});
+  chats[peerId]=[];
   connectToFriend(peerId);
   updateFriendsDisplay();
   saveData();
@@ -548,21 +575,21 @@ function addFriend() {
 }
 
 function connectToFriend(peerId) {
-  if (connections[peerId]) return;
-  const conn = peer.connect(peerId);
+  if(connections[peerId]) return;
+  const conn=peer.connect(peerId);
   setupConnection(conn);
 }
 
-function updateFriendStatus(peerId, online) {
-  const friend = friends.find(f => f.peerId === peerId);
-  if (friend) { friend.online = online; updateFriendsDisplay(); }
+function updateFriendStatus(peerId,online) {
+  const friend=friends.find(f=>f.peerId===peerId);
+  if(friend){friend.online=online;updateFriendsDisplay();}
 }
 
 function updateFriendsDisplay() {
-  const list = document.getElementById('friendsList');
-  list.innerHTML = friends.map(f => `
+  const list=document.getElementById('friendsList');
+  list.innerHTML=friends.map(f=>`
     <div class="flex flex-col items-center" onclick="showChatPrompt('${f.peerId}')">
-      <div class="friend-avatar ${f.online ? 'online' : 'offline'} w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold shadow-lg">
+      <div class="friend-avatar ${f.online?'online':'offline'} w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold shadow-lg">
         ${f.username[0].toUpperCase()}
       </div>
       <div class="text-xs mt-2 font-semibold">${f.username}</div>
@@ -572,117 +599,126 @@ function updateFriendsDisplay() {
 
 // Chat
 function showChatPrompt(peerId) {
-  const friend = friends.find(f => f.peerId === peerId);
-  if (!friend) return;
-  currentChatFriend = peerId;
-  document.getElementById('chatPromptName').textContent = friend.username;
+  const friend=friends.find(f=>f.peerId===peerId);
+  if(!friend)return;
+  currentChatFriend=peerId;
+  document.getElementById('chatPromptName').textContent=friend.username;
   document.getElementById('chatPromptModal').classList.remove('hidden');
 }
 
-function closeChatPrompt() { document.getElementById('chatPromptModal').classList.add('hidden'); currentChatFriend = null; }
-function openChatFromPrompt() { if (!currentChatFriend) return; openChat(currentChatFriend); closeChatPrompt(); }
+function closeChatPrompt(){document.getElementById('chatPromptModal').classList.add('hidden');currentChatFriend=null;}
+function openChatFromPrompt(){if(!currentChatFriend)return;openChat(currentChatFriend);closeChatPrompt();}
 
 function openChat(peerId) {
-  const friend = friends.find(f => f.peerId === peerId);
-  if (!friend) return;
-  currentChatFriend = peerId;
-  document.getElementById('chatFriendAvatar').textContent = friend.username[0].toUpperCase();
-  document.getElementById('chatFriendName').textContent = friend.username;
-  document.getElementById('chatFriendStatus').textContent = friend.online ? 'En línea' : 'Desconectado';
-  if (!chats[peerId]) chats[peerId] = [];
+  const friend=friends.find(f=>f.peerId===peerId);
+  if(!friend)return;
+  currentChatFriend=peerId;
+  document.getElementById('chatFriendAvatar').textContent=friend.username[0].toUpperCase();
+  document.getElementById('chatFriendName').textContent=friend.username;
+  document.getElementById('chatFriendStatus').textContent=friend.online?'En línea':'Desconectado';
+  if(!chats[peerId])chats[peerId]=[];
   displayChatMessages();
   document.getElementById('chatWindow').classList.remove('hidden');
 }
 
 function closeChat() {
   document.getElementById('chatWindow').classList.add('hidden');
-  currentChatFriend = null;
-  pendingMedia = null;
+  currentChatFriend=null;
+  pendingMedia=null;
   document.getElementById('mediaPreview').classList.add('hidden');
-  document.getElementById('mediaPreview').innerHTML = '';
+  document.getElementById('mediaPreview').innerHTML='';
 }
 
 function displayChatMessages() {
-  const container = document.getElementById('chatMessages');
-  const messages = chats[currentChatFriend] || [];
-  container.innerHTML = messages.map(msg => {
-    const isMine = msg.from === userData.peerId;
-    const time = new Date(msg.timestamp).toLocaleTimeString('es', {hour: '2-digit', minute: '2-digit'});
-    let content = '';
-    if (msg.type === 'text') content = `<p>${msg.message}</p>`;
-    else if (msg.type === 'image') content = `<img src="${msg.mediaData}" class="chat-media" alt="Imagen">`;
-    else if (msg.type === 'video') content = `<video src="${msg.mediaData}" class="chat-media" controls></video>`;
-    else if (msg.type === 'file') content = `<a href="${msg.mediaData}" download="${msg.fileName}" class="text-blue-400 hover:underline">📎 ${msg.fileName}</a>`;
-    return `<div class="chat-message ${isMine ? 'mine' : 'theirs'} p-3 rounded-xl">${content}<div class="text-xs opacity-70 mt-1">${time}</div></div>`;
+  const container=document.getElementById('chatMessages');
+  const messages=chats[currentChatFriend]||[];
+  container.innerHTML=messages.map(msg=>{
+    const isMine=msg.from===userData.peerId;
+    const time=new Date(msg.timestamp).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+    let content='';
+    if(msg.type==='text')content=`<p>${msg.message}</p>`;
+    else if(msg.type==='image')content=`<img src="${msg.mediaData}" class="chat-media" alt="Imagen">`;
+    else if(msg.type==='video')content=`<video src="${msg.mediaData}" class="chat-media" controls></video>`;
+    else if(msg.type==='file')content=`<a href="${msg.mediaData}" download="${msg.fileName}" class="text-blue-400 hover:underline">📎 ${msg.fileName}</a>`;
+    return `<div class="chat-message ${isMine?'mine':'theirs'} p-3 rounded-xl">${content}<div class="text-xs opacity-70 mt-1">${time}</div></div>`;
   }).join('');
-  container.scrollTop = container.scrollHeight;
+  container.scrollTop=container.scrollHeight;
 }
 
 function handleFileSelect(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const mediaData = e.target.result;
-    let type = 'file';
-    if (file.type.startsWith('image/')) type = 'image';
-    else if (file.type.startsWith('video/')) type = 'video';
-    pendingMedia = { type, mediaData, fileName: file.name };
-    const preview = document.getElementById('mediaPreview');
-    if (type === 'image') preview.innerHTML = `<img src="${mediaData}" class="max-h-20 rounded">`;
-    else if (type === 'video') preview.innerHTML = `<video src="${mediaData}" class="max-h-20 rounded"></video>`;
-    else preview.innerHTML = `<div class="text-sm">📎 ${file.name}</div>`;
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const mediaData=e.target.result;
+    let type='file';
+    if(file.type.startsWith('image/'))type='image';
+    else if(file.type.startsWith('video/'))type='video';
+    pendingMedia={type,mediaData,fileName:file.name};
+    const preview=document.getElementById('mediaPreview');
+    if(type==='image')preview.innerHTML=`<img src="${mediaData}" class="max-h-20 rounded">`;
+    else if(type==='video')preview.innerHTML=`<video src="${mediaData}" class="max-h-20 rounded"></video>`;
+    else preview.innerHTML=`<div class="text-sm">📎 ${file.name}</div>`;
     preview.classList.remove('hidden');
   };
   reader.readAsDataURL(file);
 }
 
 function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const message = input.value.trim();
-  if (!message && !pendingMedia) return;
-  if (!currentChatFriend) return;
-  const msgData = {
-    from: userData.peerId,
-    timestamp: Date.now(),
-    type: pendingMedia ? pendingMedia.type : 'text',
-    message: message,
-    mediaData: pendingMedia ? pendingMedia.mediaData : null,
-    fileName: pendingMedia ? pendingMedia.fileName : null
+  const input=document.getElementById('chatInput');
+  const message=input.value.trim();
+  if(!message&&!pendingMedia)return;
+  if(!currentChatFriend)return;
+  const msgData={
+    from:userData.peerId,
+    timestamp:Date.now(),
+    type:pendingMedia?pendingMedia.type:'text',
+    message:message,
+    mediaData:pendingMedia?pendingMedia.mediaData:null,
+    fileName:pendingMedia?pendingMedia.fileName:null
   };
-  if (!chats[currentChatFriend]) chats[currentChatFriend] = [];
+  if(!chats[currentChatFriend])chats[currentChatFriend]=[];
   chats[currentChatFriend].push(msgData);
   saveData();
-  if (connections[currentChatFriend]) connections[currentChatFriend].send({ type: 'chatMessage', ...msgData });
-  input.value = '';
-  pendingMedia = null;
+  if(connections[currentChatFriend])connections[currentChatFriend].send({type:'chatMessage',...msgData});
+  input.value='';
+  pendingMedia=null;
   document.getElementById('mediaPreview').classList.add('hidden');
-  document.getElementById('mediaPreview').innerHTML = '';
-  document.getElementById('fileInput').value = '';
+  document.getElementById('mediaPreview').innerHTML='';
+  document.getElementById('fileInput').value='';
   displayChatMessages();
 }
 
-function receiveChatMessage(fromPeer, data) {
-  if (!chats[fromPeer]) chats[fromPeer] = [];
+function receiveChatMessage(fromPeer,data) {
+  if(!chats[fromPeer])chats[fromPeer]=[];
   chats[fromPeer].push({
-    from: fromPeer,
-    timestamp: data.timestamp,
-    type: data.type,
-    message: data.message,
-    mediaData: data.mediaData,
-    fileName: data.fileName
+    from:fromPeer,
+    timestamp:data.timestamp,
+    type:data.type,
+    message:data.message,
+    mediaData:data.mediaData,
+    fileName:data.fileName
   });
   saveData();
-  if (currentChatFriend === fromPeer) displayChatMessages();
+  if(currentChatFriend===fromPeer)displayChatMessages();
 }
 
-// Game System
+// Game
+const gameInfo = {
+  obby:{name:'🏃 Obby Extremo'},
+  shooter:{name:'🔫 Shooter Arena'},
+  brainrot:{name:'🧠 Roba un Brainrot'},
+  garden:{name:'🌱 Grow a Garden'},
+  race:{name:'🏎️ Speed Race'},
+  treasure:{name:'💎 Treasure Hunt'},
+  build:{name:'🏗️ Build Battle'}
+};
+
 function selectGame(game) {
-  currentGame = game;
-  const titles = { obby: '🏃 Obby Extremo', shooter: '🔫 Shooter Arena' };
-  document.getElementById('gameTitle').textContent = titles[game];
-  const selectable = document.getElementById('selectableFriends');
-  selectable.innerHTML = friends.filter(f => f.online).map(f => `
+  currentGame=game;
+  document.getElementById('gameTitle').textContent=gameInfo[game].name;
+  const selectable=document.getElementById('selectableFriends');
+  selectable.innerHTML=friends.filter(f=>f.online).map(f=>`
     <label class="flex items-center space-x-3 cursor-pointer bg-gray-700/50 p-4 rounded-xl hover:bg-gray-700 transition-all">
       <input type="checkbox" value="${f.peerId}" class="w-5 h-5 accent-blue-500">
       <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold">${f.username[0].toUpperCase()}</div>
@@ -692,25 +728,25 @@ function selectGame(game) {
   document.getElementById('gameLobby').classList.remove('hidden');
 }
 
-function closeLobby() { document.getElementById('gameLobby').classList.add('hidden'); currentGame = null; selectedFriends = []; }
+function closeLobby(){document.getElementById('gameLobby').classList.add('hidden');currentGame=null;selectedFriends=[];}
 
 function startLobby() {
-  const checks = document.querySelectorAll('#selectableFriends input:checked');
-  selectedFriends = Array.from(checks).map(c => c.value);
-  isHost = true;
-  roomPlayers = [{ username: userData.username, peerId: userData.peerId }];
-  selectedFriends.forEach(peerId => {
-    if (connections[peerId]) connections[peerId].send({ type: 'invite', game: currentGame, host: userData.username });
+  const checks=document.querySelectorAll('#selectableFriends input:checked');
+  selectedFriends=Array.from(checks).map(c=>c.value);
+  isHost=true;
+  roomPlayers=[{username:userData.username,peerId:userData.peerId}];
+  selectedFriends.forEach(peerId=>{
+    if(connections[peerId])connections[peerId].send({type:'invite',game:currentGame,host:userData.username});
   });
   document.getElementById('gameLobby').classList.add('hidden');
   showWaitingRoom();
 }
 
-function showWaitingRoom() { document.getElementById('waitingRoom').classList.remove('hidden'); updatePlayersList(); }
+function showWaitingRoom(){document.getElementById('waitingRoom').classList.remove('hidden');updatePlayersList();}
 
 function updatePlayersList() {
-  const list = document.getElementById('playersList');
-  list.innerHTML = roomPlayers.map(p => `
+  const list=document.getElementById('playersList');
+  list.innerHTML=roomPlayers.map(p=>`
     <div class="glass-effect p-4 rounded-xl flex items-center hover:bg-white/5 transition-all">
       <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mr-4 font-bold text-lg shadow-lg">${p.username[0].toUpperCase()}</div>
       <span class="font-semibold text-lg">${p.username}</span>
@@ -722,276 +758,713 @@ function updatePlayersList() {
   `).join('');
 }
 
-function addPlayerToRoom(username, peerId) {
-  if (!roomPlayers.find(p => p.peerId === peerId)) { roomPlayers.push({ username, peerId }); updatePlayersList(); }
+function addPlayerToRoom(username,peerId) {
+  if(!roomPlayers.find(p=>p.peerId===peerId)){roomPlayers.push({username,peerId});updatePlayersList();}
 }
 
-function cancelRoom() { document.getElementById('waitingRoom').classList.add('hidden'); roomPlayers = []; isHost = false; }
+function cancelRoom(){document.getElementById('waitingRoom').classList.add('hidden');roomPlayers=[];isHost=false;}
 
 function showInviteNotification(data) {
-  currentInvite = data;
-  document.getElementById('inviteText').textContent = `${data.host} te invita a jugar ${data.game === 'obby' ? 'Obby Extremo' : 'Shooter Arena'}`;
+  currentInvite=data;
+  document.getElementById('inviteText').textContent=`${data.host} te invita a jugar ${gameInfo[data.game].name}`;
   document.getElementById('inviteNotification').classList.remove('hidden');
 }
 
 function acceptInvite() {
-  if (currentInvite) {
-    Object.values(connections).forEach(conn => conn.send({ type: 'accept', username: userData.username }));
-    currentGame = currentInvite.game;
+  if(currentInvite){
+    Object.values(connections).forEach(conn=>conn.send({type:'accept',username:userData.username}));
+    currentGame=currentInvite.game;
   }
   document.getElementById('inviteNotification').classList.add('hidden');
 }
 
-function declineInvite() { document.getElementById('inviteNotification').classList.add('hidden'); currentInvite = null; }
+function declineInvite(){document.getElementById('inviteNotification').classList.add('hidden');currentInvite=null;}
 
 function startGame() {
-  roomPlayers.forEach(p => { if (connections[p.peerId]) connections[p.peerId].send({ type: 'start', game: currentGame }); });
+  roomPlayers.forEach(p=>{if(connections[p.peerId])connections[p.peerId].send({type:'start',game:currentGame});});
   joinGame(currentGame);
 }
 
-// Three.js Game
+// Three.js Games
 function joinGame(game) {
   document.getElementById('mainMenu').classList.add('hidden');
   document.getElementById('waitingRoom').classList.add('hidden');
   document.getElementById('gameScreen').classList.remove('hidden');
+  document.getElementById('gameUI').classList.remove('hidden');
   setupMobileControls();
-  if (game === 'obby') initObby3D();
-  else initShooter3D();
+  
+  switch(game) {
+    case 'obby': initObby(); break;
+    case 'shooter': initShooter(); break;
+    case 'brainrot': initBrainrot(); break;
+    case 'garden': initGarden(); break;
+    case 'race': initRace(); break;
+    case 'treasure': initTreasure(); break;
+    case 'build': initBuild(); break;
+  }
 }
 
-function initObby3D() {
-  const container = document.getElementById('gameScreen');
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87ceeb);
-  scene.fog = new THREE.Fog(0x87ceeb, 50, 200);
+function initObby() {
+  const container=document.getElementById('gameScreen');
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x87ceeb);
+  scene.fog=new THREE.Fog(0x87ceeb,50,200);
   
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 10, 20);
+  camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.set(0,10,20);
   
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.shadowMap.enabled=true;
   container.appendChild(renderer.domElement);
   
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(10, 20, 10);
-  light.castShadow = true;
+  const light=new THREE.DirectionalLight(0xffffff,1);
+  light.position.set(10,20,10);
+  light.castShadow=true;
   scene.add(light);
-  scene.add(new THREE.AmbientLight(0x404040, 0.5));
+  scene.add(new THREE.AmbientLight(0x404040,0.5));
   
-  // Plataformas
-  const platforms = [
-    { x: 0, y: 0, z: 0, w: 10, h: 1, d: 10 },
-    { x: 15, y: 2, z: 0, w: 8, h: 1, d: 8 },
-    { x: 30, y: 5, z: 0, w: 8, h: 1, d: 8 },
-    { x: 45, y: 8, z: 0, w: 10, h: 1, d: 10 }
+  const platforms=[
+    {x:0,y:0,z:0,w:10,h:1,d:10},
+    {x:15,y:3,z:0,w:8,h:1,d:8},
+    {x:30,y:6,z:0,w:8,h:1,d:8},
+    {x:45,y:10,z:0,w:10,h:1,d:10}
   ];
   
-  platforms.forEach(p => {
-    const geo = new THREE.BoxGeometry(p.w, p.h, p.d);
-    const mat = new THREE.MeshStandardMaterial({ color: 0x10b981 });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(p.x, p.y, p.z);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
+  platforms.forEach(p=>{
+    const geo=new THREE.BoxGeometry(p.w,p.h,p.d);
+    const mat=new THREE.MeshStandardMaterial({color:0x10b981});
+    const mesh=new THREE.Mesh(geo,mat);
+    mesh.position.set(p.x,p.y,p.z);
+    mesh.castShadow=true;
+    mesh.receiveShadow=true;
     scene.add(mesh);
   });
   
-  // Player
-  const playerGeo = new THREE.BoxGeometry(1, 2, 1);
-  const playerMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6 });
-  playerMesh = new THREE.Mesh(playerGeo, playerMat);
-  playerMesh.position.set(0, 2, 0);
-  playerMesh.castShadow = true;
+  const playerGeo=new THREE.BoxGeometry(1,2,1);
+  const playerMat=new THREE.MeshStandardMaterial({color:0x3b82f6});
+  playerMesh=new THREE.Mesh(playerGeo,playerMat);
+  playerMesh.position.set(0,3,0);
+  playerMesh.castShadow=true;
   scene.add(playerMesh);
   
-  // Remote players
-  roomPlayers.forEach(p => {
-    if (p.peerId !== userData.peerId) createRemotePlayer3D(p.username);
+  velocity=new THREE.Vector3();
+  
+  roomPlayers.forEach(p=>{
+    if(p.peerId!==userData.peerId)createRemotePlayer3D(p.username);
   });
   
   animate3D();
 }
 
-function initShooter3D() {
-  const container = document.getElementById('gameScreen');
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1e293b);
+function initShooter() {
+  const container=document.getElementById('gameScreen');
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x1e293b);
   
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 5, 10);
+  camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.set(0,5,10);
   
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.shadowMap.enabled=true;
   container.appendChild(renderer.domElement);
   
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(10, 20, 10);
-  light.castShadow = true;
+  const light=new THREE.DirectionalLight(0xffffff,1);
+  light.position.set(10,20,10);
+  light.castShadow=true;
   scene.add(light);
-  scene.add(new THREE.AmbientLight(0x404040, 0.5));
+  scene.add(new THREE.AmbientLight(0x404040,0.5));
   
-  // Floor
-  const floorGeo = new THREE.PlaneGeometry(100, 100);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
-  const floor = new THREE.Mesh(floorGeo, floorMat);
-  floor.rotation.x = -Math.PI / 2;
-  floor.receiveShadow = true;
+  const floorGeo=new THREE.PlaneGeometry(100,100);
+  const floorMat=new THREE.MeshStandardMaterial({color:0x334155});
+  const floor=new THREE.Mesh(floorGeo,floorMat);
+  floor.rotation.x=-Math.PI/2;
+  floor.receiveShadow=true;
   scene.add(floor);
   
-  // Player
-  const playerGeo = new THREE.BoxGeometry(1, 2, 1);
-  const playerMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6 });
-  playerMesh = new THREE.Mesh(playerGeo, playerMat);
-  playerMesh.position.set(0, 1, 0);
-  playerMesh.castShadow = true;
+  const playerGeo=new THREE.BoxGeometry(1,2,1);
+  const playerMat=new THREE.MeshStandardMaterial({color:0x3b82f6});
+  playerMesh=new THREE.Mesh(playerGeo,playerMat);
+  playerMesh.position.set(0,1,0);
+  playerMesh.castShadow=true;
   scene.add(playerMesh);
   
-  // Remote players
-  roomPlayers.forEach(p => {
-    if (p.peerId !== userData.peerId) createRemotePlayer3D(p.username);
+  velocity=new THREE.Vector3();
+  
+  roomPlayers.forEach(p=>{
+    if(p.peerId!==userData.peerId)createRemotePlayer3D(p.username);
   });
   
+  animate3D();
+}
+
+function initBrainrot() {
+  const container=document.getElementById('gameScreen');
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x8b5cf6);
+  
+  camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.set(0,15,25);
+  
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.shadowMap.enabled=true;
+  container.appendChild(renderer.domElement);
+  
+  const light=new THREE.DirectionalLight(0xffffff,1);
+  light.position.set(10,20,10);
+  light.castShadow=true;
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0x404040,0.5));
+  
+  const floorGeo=new THREE.PlaneGeometry(50,50);
+  const floorMat=new THREE.MeshStandardMaterial({color:0xec4899});
+  const floor=new THREE.Mesh(floorGeo,floorMat);
+  floor.rotation.x=-Math.PI/2;
+  floor.receiveShadow=true;
+  scene.add(floor);
+  
+  // Brainrot en el centro
+  const brainGeo=new THREE.SphereGeometry(1.5,16,16);
+  const brainMat=new THREE.MeshStandardMaterial({color:0xff69b4,emissive:0xff1493});
+  const brain=new THREE.Mesh(brainGeo,brainMat);
+  brain.position.set(0,2,0);
+  brain.castShadow=true;
+  scene.add(brain);
+  gameState.brain=brain;
+  gameState.brainHolder=null;
+  
+  const playerGeo=new THREE.BoxGeometry(1,2,1);
+  const playerMat=new THREE.MeshStandardMaterial({color:0x3b82f6});
+  playerMesh=new THREE.Mesh(playerGeo,playerMat);
+  playerMesh.position.set(10,1,10);
+  playerMesh.castShadow=true;
+  scene.add(playerMesh);
+  
+  velocity=new THREE.Vector3();
+  
+  roomPlayers.forEach(p=>{
+    if(p.peerId!==userData.peerId)createRemotePlayer3D(p.username);
+  });
+  
+  document.getElementById('gameUI').innerHTML='🧠 ¡Roba el Brainrot!';
+  animate3D();
+}
+
+function initGarden() {
+  const container=document.getElementById('gameScreen');
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x87ceeb);
+  
+  camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.set(0,20,30);
+  camera.lookAt(0,0,0);
+  
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.shadowMap.enabled=true;
+  container.appendChild(renderer.domElement);
+  
+  const light=new THREE.DirectionalLight(0xffffff,1);
+  light.position.set(10,20,10);
+  light.castShadow=true;
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  
+  const floorGeo=new THREE.PlaneGeometry(40,40);
+  const floorMat=new THREE.MeshStandardMaterial({color:0x8b4513});
+  const floor=new THREE.Mesh(floorGeo,floorMat);
+  floor.rotation.x=-Math.PI/2;
+  floor.receiveShadow=true;
+  scene.add(floor);
+  
+  // Grid de plantación
+  gameState.plants=[];
+  for(let i=-3;i<=3;i++){
+    for(let j=-3;j<=3;j++){
+      const plotGeo=new THREE.BoxGeometry(4,0.2,4);
+      const plotMat=new THREE.MeshStandardMaterial({color:0x654321});
+      const plot=new THREE.Mesh(plotGeo,plotMat);
+      plot.position.set(i*5,0.1,j*5);
+      scene.add(plot);
+    }
+  }
+  
+  // Plantar flores al azar
+  for(let i=0;i<15;i++){
+    const stemGeo=new THREE.CylinderGeometry(0.1,0.1,2);
+    const stemMat=new THREE.MeshStandardMaterial({color:0x228b22});
+    const stem=new THREE.Mesh(stemGeo,stemMat);
+    stem.position.set(Math.random()*30-15,1,Math.random()*30-15);
+    scene.add(stem);
+    
+    const flowerGeo=new THREE.SphereGeometry(0.5,8,8);
+    const flowerMat=new THREE.MeshStandardMaterial({
+      color:[0xff69b4,0xffff00,0xff4500,0x9370db][Math.floor(Math.random()*4)]
+    });
+    const flower=new THREE.Mesh(flowerGeo,flowerMat);
+    flower.position.copy(stem.position);
+    flower.position.y=2.5;
+    scene.add(flower);
+  }
+  
+  const playerGeo=new THREE.BoxGeometry(1,2,1);
+  const playerMat=new THREE.MeshStandardMaterial({color:0x3b82f6});
+  playerMesh=new THREE.Mesh(playerGeo,playerMat);
+  playerMesh.position.set(0,1,15);
+  playerMesh.castShadow=true;
+  scene.add(playerMesh);
+  
+  velocity=new THREE.Vector3();
+  
+  roomPlayers.forEach(p=>{
+    if(p.peerId!==userData.peerId)createRemotePlayer3D(p.username);
+  });
+  
+  document.getElementById('gameUI').innerHTML='🌱 Cultiva tu Jardín | Flores: 15';
+  animate3D();
+}
+
+function initRace() {
+  const container=document.getElementById('gameScreen');
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x87ceeb);
+  
+  camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.set(0,5,15);
+  
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  container.appendChild(renderer.domElement);
+  
+  const light=new THREE.DirectionalLight(0xffffff,1);
+  light.position.set(10,20,10);
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0x404040,0.5));
+  
+  // Pista
+  const trackGeo=new THREE.PlaneGeometry(20,200);
+  const trackMat=new THREE.MeshStandardMaterial({color:0x333333});
+  const track=new THREE.Mesh(trackGeo,trackMat);
+  track.rotation.x=-Math.PI/2;
+  scene.add(track);
+  
+  // Líneas
+  for(let i=-90;i<100;i+=10){
+    const lineGeo=new THREE.BoxGeometry(0.5,0.1,3);
+    const lineMat=new THREE.MeshStandardMaterial({color:0xffffff});
+    const line=new THREE.Mesh(lineGeo,lineMat);
+    line.position.set(0,0.05,i);
+    scene.add(line);
+  }
+  
+  const carGeo=new THREE.BoxGeometry(2,1,3);
+  const carMat=new THREE.MeshStandardMaterial({color:0xff0000});
+  playerMesh=new THREE.Mesh(carGeo,carMat);
+  playerMesh.position.set(0,0.5,-80);
+  scene.add(playerMesh);
+  
+  velocity=new THREE.Vector3();
+  gameState.speed=0;
+  
+  roomPlayers.forEach(p=>{
+    if(p.peerId!==userData.peerId){
+      const rp=createRemotePlayer3D(p.username);
+      rp.mesh.geometry=new THREE.BoxGeometry(2,1,3);
+    }
+  });
+  
+  document.getElementById('gameUI').innerHTML='🏎️ Velocidad: 0 km/h';
+  animate3D();
+}
+
+function initTreasure() {
+  const container=document.getElementById('gameScreen');
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0xf4a460);
+  scene.fog=new THREE.Fog(0xf4a460,30,100);
+  
+  camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.set(0,10,20);
+  
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.shadowMap.enabled=true;
+  container.appendChild(renderer.domElement);
+  
+  const light=new THREE.DirectionalLight(0xffffff,1);
+  light.position.set(10,20,10);
+  light.castShadow=true;
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0xffa500,0.4));
+  
+  const floorGeo=new THREE.PlaneGeometry(100,100);
+  const floorMat=new THREE.MeshStandardMaterial({color:0xdaa520});
+  const floor=new THREE.Mesh(floorGeo,floorMat);
+  floor.rotation.x=-Math.PI/2;
+  floor.receiveShadow=true;
+  scene.add(floor);
+  
+  // Tesoros
+  gameState.treasures=[];
+  for(let i=0;i<20;i++){
+    const treasureGeo=new THREE.BoxGeometry(0.8,0.8,0.8);
+    const treasureMat=new THREE.MeshStandardMaterial({color:0xffd700,emissive:0xffa500});
+    const treasure=new THREE.Mesh(treasureGeo,treasureMat);
+    treasure.position.set(Math.random()*80-40,0.5,Math.random()*80-40);
+    treasure.rotation.y=Math.random()*Math.PI*2;
+    treasure.castShadow=true;
+    scene.add(treasure);
+    gameState.treasures.push(treasure);
+  }
+  
+  const playerGeo=new THREE.BoxGeometry(1,2,1);
+  const playerMat=new THREE.MeshStandardMaterial({color:0x3b82f6});
+  playerMesh=new THREE.Mesh(playerGeo,playerMat);
+  playerMesh.position.set(0,1,0);
+  playerMesh.castShadow=true;
+  scene.add(playerMesh);
+  
+  velocity=new THREE.Vector3();
+  gameState.score=0;
+  
+  roomPlayers.forEach(p=>{
+    if(p.peerId!==userData.peerId)createRemotePlayer3D(p.username);
+  });
+  
+  document.getElementById('gameUI').innerHTML='💎 Tesoros: 0/20';
+  animate3D();
+}
+
+function initBuild() {
+  const container=document.getElementById('gameScreen');
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x87ceeb);
+  
+  camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.set(0,15,25);
+  
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.shadowMap.enabled=true;
+  container.appendChild(renderer.domElement);
+  
+  const light=new THREE.DirectionalLight(0xffffff,1);
+  light.position.set(10,20,10);
+  light.castShadow=true;
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0x404040,0.5));
+  
+  const floorGeo=new THREE.PlaneGeometry(50,50);
+  const floorMat=new THREE.MeshStandardMaterial({color:0x90ee90});
+  const floor=new THREE.Mesh(floorGeo,floorMat);
+  floor.rotation.x=-Math.PI/2;
+  floor.receiveShadow=true;
+  scene.add(floor);
+  
+  // Grid de construcción
+  for(let i=-5;i<=5;i++){
+    for(let j=-5;j<=5;j++){
+      const gridGeo=new THREE.BoxGeometry(4,0.1,4);
+      const gridMat=new THREE.MeshBasicMaterial({color:0xcccccc,wireframe:true});
+      const grid=new THREE.Mesh(gridGeo,gridMat);
+      grid.position.set(i*4.5,0.05,j*4.5);
+      scene.add(grid);
+    }
+  }
+  
+  const playerGeo=new THREE.BoxGeometry(1,2,1);
+  const playerMat=new THREE.MeshStandardMaterial({color:0x3b82f6});
+  playerMesh=new THREE.Mesh(playerGeo,playerMat);
+  playerMesh.position.set(0,1,20);
+  playerMesh.castShadow=true;
+  scene.add(playerMesh);
+  
+  velocity=new THREE.Vector3();
+  gameState.blocks=[];
+  
+  roomPlayers.forEach(p=>{
+    if(p.peerId!==userData.peerId)createRemotePlayer3D(p.username);
+  });
+  
+  document.getElementById('gameUI').innerHTML='🏗️ Construye con Espacio | Bloques: 0';
   animate3D();
 }
 
 function createRemotePlayer3D(username) {
-  const geo = new THREE.BoxGeometry(1, 2, 1);
-  const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(Math.random() * 10 - 5, 1, Math.random() * 10 - 5);
-  mesh.castShadow = true;
+  const geo=new THREE.BoxGeometry(1,2,1);
+  const mat=new THREE.MeshStandardMaterial({color:0xf59e0b});
+  const mesh=new THREE.Mesh(geo,mat);
+  mesh.position.set(Math.random()*10-5,1,Math.random()*10-5);
+  mesh.castShadow=true;
   scene.add(mesh);
-  remotePlayers[username] = { mesh, label: null };
+  remotePlayers[username]={mesh,label:null};
   
-  const label = document.createElement('div');
-  label.className = 'player-label';
-  label.textContent = username;
+  const label=document.createElement('div');
+  label.className='player-label';
+  label.textContent=username;
   document.getElementById('gameScreen').appendChild(label);
-  remotePlayers[username].label = label;
+  remotePlayers[username].label=label;
+  
+  return remotePlayers[username];
 }
 
-function updateRemotePlayer(peerId, position, rotation) {
-  const friend = friends.find(f => f.peerId === peerId);
-  if (friend && remotePlayers[friend.username]) {
-    remotePlayers[friend.username].mesh.position.set(position.x, position.y, position.z);
-    if (rotation) remotePlayers[friend.username].mesh.rotation.y = rotation.y;
+function updateRemotePlayer(peerId,position,rotation) {
+  const friend=friends.find(f=>f.peerId===peerId);
+  if(friend&&remotePlayers[friend.username]){
+    remotePlayers[friend.username].mesh.position.set(position.x,position.y,position.z);
+    if(rotation)remotePlayers[friend.username].mesh.rotation.y=rotation.y;
   }
 }
 
 function animate3D() {
   requestAnimationFrame(animate3D);
   
-  if (playerMesh) {
-    const speed = 0.2;
-    if (keys['w'] || keys['W'] || keys['ArrowUp']) playerMesh.position.z -= speed;
-    if (keys['s'] || keys['S'] || keys['ArrowDown']) playerMesh.position.z += speed;
-    if (keys['a'] || keys['A'] || keys['ArrowLeft']) playerMesh.position.x -= speed;
-    if (keys['d'] || keys['D'] || keys['ArrowRight']) playerMesh.position.x += speed;
+  if(playerMesh) {
+    const speed=0.25;
+    const jumpForce=0.25;
+    const gravity=-0.015;
     
-    camera.position.x = playerMesh.position.x;
-    camera.position.z = playerMesh.position.z + 10;
-    camera.lookAt(playerMesh.position);
+    // Movimiento horizontal
+    if(keys['w']||keys['W']||keys['ArrowUp']) {
+      if(currentGame==='race') {
+        gameState.speed=Math.min(gameState.speed+0.5,100);
+        velocity.z=-gameState.speed*0.05;
+      } else {
+        velocity.x-=Math.sin(playerMesh.rotation.y)*speed;
+        velocity.z-=Math.cos(playerMesh.rotation.y)*speed;
+      }
+    }
+    if(keys['s']||keys['S']||keys['ArrowDown']) {
+      if(currentGame==='race') {
+        gameState.speed=Math.max(gameState.speed-0.3,0);
+        velocity.z=-gameState.speed*0.05;
+      } else {
+        velocity.x+=Math.sin(playerMesh.rotation.y)*speed;
+        velocity.z+=Math.cos(playerMesh.rotation.y)*speed;
+      }
+    }
+    if(keys['a']||keys['A']||keys['ArrowLeft']) {
+      if(currentGame==='race') {
+        playerMesh.position.x=Math.max(playerMesh.position.x-0.2,-8);
+      } else {
+        playerMesh.rotation.y+=0.05;
+      }
+    }
+    if(keys['d']||keys['D']||keys['ArrowRight']) {
+      if(currentGame==='race') {
+        playerMesh.position.x=Math.min(playerMesh.position.x+0.2,8);
+      } else {
+        playerMesh.rotation.y-=0.05;
+      }
+    }
     
-    // Send position
-    Object.values(connections).forEach(conn => {
-      conn.send({ 
-        type: 'playerMove', 
-        position: { x: playerMesh.position.x, y: playerMesh.position.y, z: playerMesh.position.z },
-        rotation: { y: playerMesh.rotation.y }
+    // Salto
+    if(keys[' ']&&onGround) {
+      velocity.y=jumpForce;
+      onGround=false;
+      keys[' ']=false;
+    }
+    
+    // Gravedad
+    velocity.y+=gravity;
+    
+    // Aplicar velocidad
+    playerMesh.position.add(velocity);
+    
+    // Colisión con suelo
+    if(playerMesh.position.y<=1) {
+      playerMesh.position.y=1;
+      velocity.y=0;
+      onGround=true;
+    }
+    
+    // Fricción
+    velocity.x*=0.9;
+    velocity.z*=0.9;
+    
+    // Lógica específica por juego
+    if(currentGame==='brainrot'&&gameState.brain) {
+      const dist=playerMesh.position.distanceTo(gameState.brain.position);
+      if(dist<2) {
+        gameState.brainHolder=userData.username;
+        gameState.brain.position.copy(playerMesh.position);
+        gameState.brain.position.y=3;
+        document.getElementById('gameUI').innerHTML='🧠 ¡Tienes el Brainrot! ¡Huye!';
+      }
+      if(gameState.brainHolder===userData.username) {
+        gameState.brain.position.copy(playerMesh.position);
+        gameState.brain.position.y=3;
+      }
+    }
+    
+    if(currentGame==='treasure') {
+      gameState.treasures.forEach((t,i)=>{
+        if(t&&playerMesh.position.distanceTo(t.position)<2) {
+          scene.remove(t);
+          gameState.treasures[i]=null;
+          gameState.score++;
+          document.getElementById('gameUI').innerHTML=`💎 Tesoros: ${gameState.score}/20`;
+        }
+      });
+    }
+    
+    if(currentGame==='race') {
+      document.getElementById('gameUI').innerHTML=`🏎️ Velocidad: ${Math.floor(gameState.speed)} km/h`;
+      // Mover pista
+      scene.children.forEach(child=>{
+        if(child.position&&child.position.z!==undefined&&child.position.y===0.05) {
+          child.position.z+=gameState.speed*0.05;
+          if(child.position.z>100)child.position.z=-100;
+        }
+      });
+    }
+    
+    if(currentGame==='build'&&keys[' ']&&onGround) {
+      const blockGeo=new THREE.BoxGeometry(2,2,2);
+      const blockMat=new THREE.MeshStandardMaterial({
+        color:[0xff0000,0x00ff00,0x0000ff,0xffff00][Math.floor(Math.random()*4)]
+      });
+      const block=new THREE.Mesh(blockGeo,blockMat);
+      block.position.copy(playerMesh.position);
+      block.position.y=1;
+      block.castShadow=true;
+      block.receiveShadow=true;
+      scene.add(block);
+      gameState.blocks.push(block);
+      document.getElementById('gameUI').innerHTML=`🏗️ Bloques: ${gameState.blocks.length}`;
+    }
+    
+    // Cámara
+    if(currentGame==='garden'||currentGame==='build') {
+      camera.position.x=playerMesh.position.x;
+      camera.position.z=playerMesh.position.z+30;
+      camera.lookAt(playerMesh.position);
+    } else if(currentGame==='race') {
+      camera.position.x=playerMesh.position.x;
+      camera.position.y=playerMesh.position.y+5;
+      camera.position.z=playerMesh.position.z+15;
+      camera.lookAt(playerMesh.position);
+    } else {
+      camera.position.x=playerMesh.position.x;
+      camera.position.z=playerMesh.position.z+15;
+      camera.lookAt(playerMesh.position);
+    }
+    
+    // Enviar posición
+    Object.values(connections).forEach(conn=>{
+      conn.send({
+        type:'playerMove',
+        position:{x:playerMesh.position.x,y:playerMesh.position.y,z:playerMesh.position.z},
+        rotation:{y:playerMesh.rotation.y}
       });
     });
     
-    // Update labels
-    Object.values(remotePlayers).forEach(rp => {
-      if (rp.label) {
-        const pos = rp.mesh.position.clone().project(camera);
-        pos.x = (pos.x * 0.5 + 0.5) * window.innerWidth;
-        pos.y = (-(pos.y * 0.5) + 0.5) * window.innerHeight - 40;
-        rp.label.style.left = pos.x + 'px';
-        rp.label.style.top = pos.y + 'px';
+    // Actualizar labels
+    Object.values(remotePlayers).forEach(rp=>{
+      if(rp.label&&rp.mesh) {
+        const pos=rp.mesh.position.clone().project(camera);
+        pos.x=(pos.x*0.5+0.5)*window.innerWidth;
+        pos.y=(-(pos.y*0.5)+0.5)*window.innerHeight-40;
+        rp.label.style.left=pos.x+'px';
+        rp.label.style.top=pos.y+'px';
       }
     });
+    
+    // Animaciones
+    if(gameState.brain) gameState.brain.rotation.y+=0.02;
+    gameState.treasures?.forEach(t=>{if(t)t.rotation.y+=0.03;});
   }
   
-  renderer.render(scene, camera);
+  renderer.render(scene,camera);
 }
 
-function createRemoteBullet(peerId, position, direction) {
-  if (!scene) return;
-  const geo = new THREE.SphereGeometry(0.2);
-  const mat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
-  const bullet = new THREE.Mesh(geo, mat);
-  bullet.position.set(position.x, position.y, position.z);
+function createRemoteBullet(peerId,position,direction) {
+  if(!scene)return;
+  const geo=new THREE.SphereGeometry(0.3);
+  const mat=new THREE.MeshBasicMaterial({color:0xfbbf24});
+  const bullet=new THREE.Mesh(geo,mat);
+  bullet.position.set(position.x,position.y,position.z);
   scene.add(bullet);
   
-  const vel = new THREE.Vector3(direction.x, direction.y, direction.z).normalize().multiplyScalar(0.5);
-  let life = 100;
-  const updateBullet = () => {
+  const vel=new THREE.Vector3(direction.x,direction.y,direction.z).normalize().multiplyScalar(0.8);
+  let life=100;
+  const updateBullet=()=>{
     bullet.position.add(vel);
     life--;
-    if (life > 0) requestAnimationFrame(updateBullet);
-    else { scene.remove(bullet); bullet.geometry.dispose(); bullet.material.dispose(); }
+    if(life>0)requestAnimationFrame(updateBullet);
+    else{scene.remove(bullet);bullet.geometry.dispose();bullet.material.dispose();}
   };
   updateBullet();
 }
 
-document.addEventListener('keydown', (e) => {
-  keys[e.key] = true;
-  keys[e.key.toLowerCase()] = true;
-  if (e.key === ' ' && currentGame === 'shooter') {
+function updateGameState(state) {
+  if(currentGame==='brainrot'&&state.brainHolder) {
+    gameState.brainHolder=state.brainHolder;
+    if(state.brainPosition&&gameState.brain) {
+      gameState.brain.position.set(state.brainPosition.x,state.brainPosition.y,state.brainPosition.z);
+    }
+  }
+}
+
+document.addEventListener('keydown',e=>{
+  keys[e.key]=true;
+  keys[e.key.toLowerCase()]=true;
+  if(e.key===' '&&currentGame==='shooter') {
     e.preventDefault();
-    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-    Object.values(connections).forEach(conn => {
-      conn.send({ type: 'shoot', position: playerMesh.position, direction: dir });
+    const dir=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+    Object.values(connections).forEach(conn=>{
+      conn.send({type:'shoot',position:playerMesh.position,direction:dir});
     });
-    createRemoteBullet(userData.peerId, playerMesh.position, dir);
+    createRemoteBullet(userData.peerId,playerMesh.position,dir);
   }
 });
 
-document.addEventListener('keyup', (e) => {
-  keys[e.key] = false;
-  keys[e.key.toLowerCase()] = false;
+document.addEventListener('keyup',e=>{
+  keys[e.key]=false;
+  keys[e.key.toLowerCase()]=false;
 });
 
 function setupMobileControls() {
-  ['btnUp', 'btnDown', 'btnLeft', 'btnRight', 'btnShoot', 'btnJump'].forEach(id => {
-    const btn = document.getElementById(id);
-    const key = { btnUp: 'w', btnDown: 's', btnLeft: 'a', btnRight: 'd', btnJump: 'w' }[id];
-    if (key) {
-      btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; });
-      btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[key] = false; });
-      btn.addEventListener('mousedown', () => keys[key] = true);
-      btn.addEventListener('mouseup', () => keys[key] = false);
+  ['btnUp','btnDown','btnLeft','btnRight','btnShoot','btnJump'].forEach(id=>{
+    const btn=document.getElementById(id);
+    const keyMap={btnUp:'w',btnDown:'s',btnLeft:'a',btnRight:'d',btnJump:' '};
+    const key=keyMap[id];
+    if(key) {
+      btn.addEventListener('touchstart',e=>{e.preventDefault();keys[key]=true;});
+      btn.addEventListener('touchend',e=>{e.preventDefault();keys[key]=false;});
+      btn.addEventListener('mousedown',()=>keys[key]=true);
+      btn.addEventListener('mouseup',()=>keys[key]=false);
     }
-    if (id === 'btnShoot') {
-      btn.addEventListener('click', () => {
-        if (currentGame === 'shooter' && playerMesh) {
-          const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-          Object.values(connections).forEach(conn => {
-            conn.send({ type: 'shoot', position: playerMesh.position, direction: dir });
+    if(id==='btnShoot') {
+      btn.addEventListener('click',()=>{
+        if(currentGame==='shooter'&&playerMesh) {
+          const dir=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+          Object.values(connections).forEach(conn=>{
+            conn.send({type:'shoot',position:playerMesh.position,direction:dir});
           });
-          createRemoteBullet(userData.peerId, playerMesh.position, dir);
+          createRemoteBullet(userData.peerId,playerMesh.position,dir);
         }
       });
     }
   });
 }
 
-window.addEventListener('resize', () => {
-  if (camera && renderer) {
-    camera.aspect = window.innerWidth / window.innerHeight;
+window.addEventListener('resize',()=>{
+  if(camera&&renderer) {
+    camera.aspect=window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth,window.innerHeight);
   }
 });
 
 function logout() {
+  if(peer)peer.destroy();
   localStorage.clear();
   location.reload();
 }
 </script>
 
 </body>
-</html>
+  </html>
