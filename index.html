@@ -122,6 +122,7 @@
     .friend-avatar {
       position: relative;
       transition: all 0.3s;
+      cursor: pointer;
     }
     
     .friend-avatar:hover {
@@ -223,7 +224,7 @@
       }
     }
     
-    input:focus {
+    input:focus, textarea:focus {
       outline: none;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
     }
@@ -282,6 +283,45 @@
     @keyframes gradient-shift {
       0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
+    }
+    
+    .chat-message {
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+    
+    .chat-message.mine {
+      margin-left: auto;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+    
+    .chat-message.theirs {
+      margin-right: auto;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .chat-media {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.5);
     }
   </style>
 </head>
@@ -388,6 +428,56 @@
   </div>
 </div>
 
+<!-- Modal Chat Prompt -->
+<div id="chatPromptModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 modal-backdrop">
+  <div class="glass-effect p-8 rounded-3xl w-[450px] modal-content">
+    <h2 class="text-2xl font-black mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Chat con <span id="chatPromptName"></span></h2>
+    <p class="text-gray-300 mb-6">¿Quieres abrir el chat con este amigo?</p>
+    <div class="flex space-x-3">
+      <button onclick="openChatFromPrompt()" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 p-4 rounded-xl font-bold shadow-lg transition-all hover:scale-105 relative z-10">
+        Sí, chatear
+      </button>
+      <button onclick="closeChatPrompt()" class="flex-1 bg-gray-700 hover:bg-gray-600 p-4 rounded-xl font-bold transition-all hover:scale-105">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Ventana de Chat -->
+<div id="chatWindow" class="hidden fixed top-20 right-6 w-96 h-[600px] glass-effect rounded-2xl shadow-2xl z-40 flex flex-col">
+  <div class="p-4 border-b border-white/10 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div id="chatFriendAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold"></div>
+      <div>
+        <div id="chatFriendName" class="font-bold"></div>
+        <div id="chatFriendStatus" class="text-xs text-gray-400"></div>
+      </div>
+    </div>
+    <button onclick="closeChat()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+  </div>
+  
+  <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin"></div>
+  
+  <div class="p-4 border-t border-white/10">
+    <div id="mediaPreview" class="hidden mb-2 p-2 bg-gray-700/50 rounded-lg"></div>
+    <div class="flex space-x-2 mb-2">
+      <input type="file" id="fileInput" accept="image/*,video/*,*" class="hidden" onchange="handleFileSelect(event)">
+      <button onclick="document.getElementById('fileInput').click()" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg transition-all" title="Adjuntar archivo">
+        📎
+      </button>
+    </div>
+    <div class="flex space-x-2">
+      <input id="chatInput" type="text" placeholder="Escribe un mensaje..." 
+        class="flex-1 p-3 bg-gray-800/50 rounded-xl border-2 border-gray-700 focus:border-blue-500 text-white placeholder-gray-400 transition-all"
+        onkeypress="if(event.key==='Enter') sendMessage()">
+      <button onclick="sendMessage()" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-6 rounded-xl font-bold transition-all">
+        Enviar
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Lobby del Juego -->
 <div id="gameLobby" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-40 modal-backdrop">
   <div class="glass-effect p-10 rounded-3xl w-2/3 max-w-4xl modal-content">
@@ -479,9 +569,10 @@
 </div>
 
 <script>
-// Variables globales (en memoria, simula localStorage)
-let userData = { username: '', peerId: '' };
+// Variables globales con almacenamiento en memoria
+let userData = { username: '', peerId: '', loggedIn: false };
 let friends = []; // {peerId, username, online}
+let chats = {}; // {peerId: [{from, message, timestamp, type, mediaData}]}
 let peer = null;
 let connections = {};
 let currentGame = null;
@@ -489,6 +580,30 @@ let selectedFriends = [];
 let roomPlayers = [];
 let isHost = false;
 let currentInvite = null;
+let currentChatFriend = null;
+let pendingMedia = null;
+
+// Cargar datos guardados al iniciar
+window.addEventListener('load', () => {
+  loadSavedData();
+});
+
+function loadSavedData() {
+  // Simular carga de datos (en un entorno real usaría localStorage)
+  // Aquí los datos persisten solo durante la sesión
+  if (userData.loggedIn) {
+    initPeer();
+    showMainMenu();
+  }
+}
+
+function saveData() {
+  // En un entorno real, aquí se guardaría en localStorage:
+  // localStorage.setItem('userData', JSON.stringify(userData));
+  // localStorage.setItem('friends', JSON.stringify(friends));
+  // localStorage.setItem('chats', JSON.stringify(chats));
+  console.log('Datos guardados (en memoria)');
+}
 
 // Inicialización
 function register() {
@@ -496,19 +611,26 @@ function register() {
   if (!username) return alert('Ingresa un nombre de usuario');
   
   userData.username = username;
+  userData.loggedIn = true;
+  saveData();
   initPeer();
 }
 
 function initPeer() {
-  // Generar peer ID único (en localStorage real sería persistente)
-  userData.peerId = 'user_' + Math.random().toString(36).substr(2, 9);
+  // Generar o usar peer ID persistente
+  if (!userData.peerId) {
+    userData.peerId = 'user_' + Math.random().toString(36).substr(2, 9);
+  }
   
   peer = new Peer(userData.peerId);
   
   peer.on('open', (id) => {
     console.log('Peer conectado:', id);
+    userData.peerId = id;
     document.getElementById('myPeerId').textContent = id;
+    saveData();
     showMainMenu();
+    reconnectToFriends();
   });
   
   peer.on('connection', (conn) => {
@@ -520,6 +642,14 @@ function initPeer() {
     if (err.type === 'unavailable-id') {
       userData.peerId = 'user_' + Math.random().toString(36).substr(2, 9);
       peer = new Peer(userData.peerId);
+    }
+  });
+}
+
+function reconnectToFriends() {
+  friends.forEach(f => {
+    if (!connections[f.peerId]) {
+      connectToFriend(f.peerId);
     }
   });
 }
@@ -549,6 +679,9 @@ function handleMessage(data, fromPeer) {
         friend.online = true;
         updateFriendsDisplay();
       }
+      break;
+    case 'chatMessage':
+      receiveChatMessage(fromPeer, data);
       break;
     case 'invite':
       showInviteNotification(data);
@@ -590,8 +723,10 @@ function addFriend() {
   if (friends.find(f => f.peerId === peerId)) return alert('Ya es tu amigo');
   
   friends.push({ peerId, username: peerId.split('_')[1], online: false });
+  chats[peerId] = [];
   connectToFriend(peerId);
   updateFriendsDisplay();
+  saveData();
   hideAddFriend();
 }
 
@@ -612,8 +747,8 @@ function updateFriendStatus(peerId, online) {
 function updateFriendsDisplay() {
   const list = document.getElementById('friendsList');
   list.innerHTML = friends.map(f => `
-    <div class="flex flex-col items-center">
-      <div class="friend-avatar ${f.online ? 'online' : 'offline'} w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold shadow-lg cursor-pointer">
+    <div class="flex flex-col items-center" onclick="showChatPrompt('${f.peerId}')">
+      <div class="friend-avatar ${f.online ? 'online' : 'offline'} w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold shadow-lg">
         ${f.username[0].toUpperCase()}
       </div>
       <div class="text-xs mt-2 font-semibold">${f.username}</div>
@@ -621,6 +756,165 @@ function updateFriendsDisplay() {
   `).join('');
 }
 
+// Sistema de Chat
+function showChatPrompt(peerId) {
+  const friend = friends.find(f => f.peerId === peerId);
+  if (!friend) return;
+  
+  currentChatFriend = peerId;
+  document.getElementById('chatPromptName').textContent = friend.username;
+  document.getElementById('chatPromptModal').classList.remove('hidden');
+}
+
+function closeChatPrompt() {
+  document.getElementById('chatPromptModal').classList.add('hidden');
+  currentChatFriend = null;
+}
+
+function openChatFromPrompt() {
+  if (!currentChatFriend) return;
+  openChat(currentChatFriend);
+  closeChatPrompt();
+}
+
+function openChat(peerId) {
+  const friend = friends.find(f => f.peerId === peerId);
+  if (!friend) return;
+  
+  currentChatFriend = peerId;
+  
+  document.getElementById('chatFriendAvatar').textContent = friend.username[0].toUpperCase();
+  document.getElementById('chatFriendName').textContent = friend.username;
+  document.getElementById('chatFriendStatus').textContent = friend.online ? 'En línea' : 'Desconectado';
+  
+  if (!chats[peerId]) chats[peerId] = [];
+  
+  displayChatMessages();
+  document.getElementById('chatWindow').classList.remove('hidden');
+}
+
+function closeChat() {
+  document.getElementById('chatWindow').classList.add('hidden');
+  currentChatFriend = null;
+  pendingMedia = null;
+  document.getElementById('mediaPreview').classList.add('hidden');
+}
+
+function displayChatMessages() {
+  const container = document.getElementById('chatMessages');
+  const messages = chats[currentChatFriend] || [];
+  
+  container.innerHTML = messages.map(msg => {
+    const isMine = msg.from === userData.peerId;
+    const time = new Date(msg.timestamp).toLocaleTimeString('es', {hour: '2-digit', minute: '2-digit'});
+    
+    let content = '';
+    if (msg.type === 'text') {
+      content = `<p>${msg.message}</p>`;
+    } else if (msg.type === 'image') {
+      content = `<img src="${msg.mediaData}" class="chat-media" alt="Imagen">`;
+    } else if (msg.type === 'video') {
+      content = `<video src="${msg.mediaData}" class="chat-media" controls></video>`;
+    } else if (msg.type === 'file') {
+      content = `<a href="${msg.mediaData}" download="${msg.fileName}" class="text-blue-400 hover:underline">📎 ${msg.fileName}</a>`;
+    }
+    
+    return `
+      <div class="chat-message ${isMine ? 'mine' : 'theirs'} p-3 rounded-xl">
+        ${content}
+        <div class="text-xs opacity-70 mt-1">${time}</div>
+      </div>
+    `;
+  }).join('');
+  
+  container.scrollTop = container.scrollHeight;
+}
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const mediaData = e.target.result;
+    let type = 'file';
+    
+    if (file.type.startsWith('image/')) type = 'image';
+    else if (file.type.startsWith('video/')) type = 'video';
+    
+    pendingMedia = { type, mediaData, fileName: file.name };
+    
+    // Mostrar preview
+    const preview = document.getElementById('mediaPreview');
+    if (type === 'image') {
+      preview.innerHTML = `<img src="${mediaData}" class="max-h-20 rounded">`;
+    } else if (type === 'video') {
+      preview.innerHTML = `<video src="${mediaData}" class="max-h-20 rounded"></video>`;
+    } else {
+      preview.innerHTML = `<div class="text-sm">📎 ${file.name}</div>`;
+    }
+    preview.classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  
+  if (!message && !pendingMedia) return;
+  if (!currentChatFriend) return;
+  
+  const msgData = {
+    from: userData.peerId,
+    timestamp: Date.now(),
+    type: pendingMedia ? pendingMedia.type : 'text',
+    message: message,
+    mediaData: pendingMedia ? pendingMedia.mediaData : null,
+    fileName: pendingMedia ? pendingMedia.fileName : null
+  };
+  
+  // Guardar en chat local
+  if (!chats[currentChatFriend]) chats[currentChatFriend] = [];
+  chats[currentChatFriend].push(msgData);
+  saveData();
+  
+  // Enviar al amigo
+  if (connections[currentChatFriend]) {
+    connections[currentChatFriend].send({
+      type: 'chatMessage',
+      ...msgData
+    });
+  }
+  
+  input.value = '';
+  pendingMedia = null;
+  document.getElementById('mediaPreview').classList.add('hidden');
+  document.getElementById('fileInput').value = '';
+  displayChatMessages();
+}
+
+function receiveChatMessage(fromPeer, data) {
+  if (!chats[fromPeer]) chats[fromPeer] = [];
+  
+  chats[fromPeer].push({
+    from: fromPeer,
+    timestamp: data.timestamp,
+    type: data.type,
+    message: data.message,
+    mediaData: data.mediaData,
+    fileName: data.fileName
+  });
+  
+  saveData();
+  
+  // Si el chat está abierto, actualizar
+  if (currentChatFriend === fromPeer) {
+    displayChatMessages();
+  }
+}
+
+// Sistema de Juegos
 function selectGame(game) {
   currentGame = game;
   const titles = { obby: '🏃 Obby Extremo', shooter: '🔫 Shooter Arena' };
@@ -744,6 +1038,8 @@ function joinGame(game) {
   document.getElementById('waitingRoom').classList.add('hidden');
   document.getElementById('gameScreen').classList.remove('hidden');
   
+  setupMobileControls();
+  
   if (game === 'obby') {
     initObby();
   } else {
@@ -753,7 +1049,8 @@ function joinGame(game) {
 
 function initObby() {
   const screen = document.getElementById('gameScreen');
-  screen.innerHTML = '';
+  const existingPlayers = screen.querySelectorAll('.player, .platform');
+  existingPlayers.forEach(el => el.remove());
   
   // Crear plataformas
   const platforms = [
@@ -774,14 +1071,31 @@ function initObby() {
   });
   
   createPlayer(userData.username, 150, 450, true);
+  
+  // Crear jugadores remotos
+  roomPlayers.forEach(p => {
+    if (p.peerId !== userData.peerId) {
+      createPlayer(p.username, 150 + Math.random() * 100, 450, false);
+    }
+  });
+  
   startGameLoop();
 }
 
 function initShooter() {
   const screen = document.getElementById('gameScreen');
-  screen.innerHTML = '';
+  const existingPlayers = screen.querySelectorAll('.player, .bullet');
+  existingPlayers.forEach(el => el.remove());
   
   createPlayer(userData.username, 400, 300, true);
+  
+  // Crear jugadores remotos
+  roomPlayers.forEach(p => {
+    if (p.peerId !== userData.peerId) {
+      createPlayer(p.username, 400 + Math.random() * 200, 300 + Math.random() * 200, false);
+    }
+  });
+  
   startGameLoop();
 }
 
@@ -817,26 +1131,68 @@ function updateRemotePlayer(peerId, x, y) {
 
 document.addEventListener('keydown', (e) => {
   keys[e.key] = true;
-  if (e.key === ' ' && currentGame === 'shooter') {
+  keys[e.key.toLowerCase()] = true;
+  if ((e.key === ' ' || e.key === 'Spacebar') && currentGame === 'shooter') {
+    e.preventDefault();
     shoot();
   }
 });
 
 document.addEventListener('keyup', (e) => {
   keys[e.key] = false;
+  keys[e.key.toLowerCase()] = false;
 });
+
+// Controles móviles
+function setupMobileControls() {
+  const btnUp = document.getElementById('btnUp');
+  const btnDown = document.getElementById('btnDown');
+  const btnLeft = document.getElementById('btnLeft');
+  const btnRight = document.getElementById('btnRight');
+  const btnShoot = document.getElementById('btnShoot');
+  const btnJump = document.getElementById('btnJump');
+  
+  // Eventos táctiles
+  btnUp.addEventListener('touchstart', (e) => { e.preventDefault(); keys['w'] = true; });
+  btnUp.addEventListener('touchend', (e) => { e.preventDefault(); keys['w'] = false; });
+  btnUp.addEventListener('mousedown', () => keys['w'] = true);
+  btnUp.addEventListener('mouseup', () => keys['w'] = false);
+  
+  btnDown.addEventListener('touchstart', (e) => { e.preventDefault(); keys['s'] = true; });
+  btnDown.addEventListener('touchend', (e) => { e.preventDefault(); keys['s'] = false; });
+  btnDown.addEventListener('mousedown', () => keys['s'] = true);
+  btnDown.addEventListener('mouseup', () => keys['s'] = false);
+  
+  btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); keys['a'] = true; });
+  btnLeft.addEventListener('touchend', (e) => { e.preventDefault(); keys['a'] = false; });
+  btnLeft.addEventListener('mousedown', () => keys['a'] = true);
+  btnLeft.addEventListener('mouseup', () => keys['a'] = false);
+  
+  btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); keys['d'] = true; });
+  btnRight.addEventListener('touchend', (e) => { e.preventDefault(); keys['d'] = false; });
+  btnRight.addEventListener('mousedown', () => keys['d'] = true);
+  btnRight.addEventListener('mouseup', () => keys['d'] = false);
+  
+  btnShoot.addEventListener('touchstart', (e) => { e.preventDefault(); if (currentGame === 'shooter') shoot(); });
+  btnShoot.addEventListener('click', () => { if (currentGame === 'shooter') shoot(); });
+  
+  btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); keys['w'] = true; });
+  btnJump.addEventListener('touchend', (e) => { e.preventDefault(); keys['w'] = false; });
+  btnJump.addEventListener('mousedown', () => keys['w'] = true);
+  btnJump.addEventListener('mouseup', () => keys['w'] = false);
+}
 
 function startGameLoop() {
   setInterval(() => {
     if (!myPlayer) return;
     
-    // Movimiento
-    if (keys['ArrowLeft'] || keys['a']) myPlayer.vx = -5;
-    else if (keys['ArrowRight'] || keys['d']) myPlayer.vx = 5;
+    // Movimiento con WASD y flechas
+    if (keys['ArrowLeft'] || keys['a'] || keys['A']) myPlayer.vx = -5;
+    else if (keys['ArrowRight'] || keys['d'] || keys['D']) myPlayer.vx = 5;
     else myPlayer.vx = 0;
     
-    if (keys['ArrowUp'] || keys['w']) myPlayer.vy = -5;
-    else if (keys['ArrowDown'] || keys['s']) myPlayer.vy = 5;
+    if (keys['ArrowUp'] || keys['w'] || keys['W']) myPlayer.vy = -5;
+    else if (keys['ArrowDown'] || keys['s'] || keys['S']) myPlayer.vy = 5;
     else myPlayer.vy = 0;
     
     myPlayer.x += myPlayer.vx;
